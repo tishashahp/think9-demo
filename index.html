@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From fragmented vendor conversations to a weekly action list · demo for Think9</title>
+<style>
+  :root{
+    --ink:#16161a; --paper:#faf9f6; --line:#e6e2da; --accent:#b45309; --accent-soft:#fdf3e7;
+    --wa-bg:#0b141a; --wa-panel:#111b21; --wa-green:#005c4b; --wa-in:#202c33; --wa-text:#e9edef; --wa-sub:#8696a0;
+    --ok:#1a7f4b; --warn:#b45309; --bad:#b3261e;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Helvetica Neue", Arial, sans-serif; background:var(--paper); color:var(--ink); min-height:100vh; display:flex; flex-direction:column;}
+  header{padding:18px 28px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:14px; background:var(--paper);}
+  header .brand{font-weight:700; letter-spacing:.14em; font-size:14px;}
+  header .brand span{color:var(--accent);}
+  header .sub{font-size:12.5px; color:#6b675f;}
+  .stage{flex:1; display:flex; gap:26px; padding:22px 28px; max-width:1180px; width:100%; margin:0 auto;}
+
+  /* phone */
+  .phone{width:340px; min-width:300px; background:var(--wa-bg); border-radius:26px; padding:10px; box-shadow:0 12px 40px rgba(0,0,0,.18); display:flex; flex-direction:column; height:640px;}
+  .phone .top{background:var(--wa-panel); border-radius:18px 18px 0 0; padding:12px 14px; display:flex; align-items:center; gap:10px;}
+  .avatar{width:34px; height:34px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;}
+  .phone .top .name{color:var(--wa-text); font-size:14px; font-weight:600;}
+  .phone .top .status{color:var(--wa-sub); font-size:11px;}
+  .chat{flex:1; overflow-y:auto; padding:12px 10px; display:flex; flex-direction:column; gap:8px; background:var(--wa-bg); border-radius:0 0 18px 18px;}
+  .day{align-self:center; background:#182229; color:var(--wa-sub); font-size:10.5px; padding:3px 10px; border-radius:8px; margin:6px 0 2px;}
+  .msg{max-width:86%; padding:8px 11px; border-radius:10px; font-size:12.8px; line-height:1.42; color:var(--wa-text); animation:pop .25s ease;}
+  @keyframes pop{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  .msg.out{align-self:flex-end; background:var(--wa-green); border-top-right-radius:2px;}
+  .msg.in{align-self:flex-start; background:var(--wa-in); border-top-left-radius:2px;}
+  .msg .fwd{font-size:10.5px; color:#9fd3c7; margin-bottom:4px; font-style:italic;}
+  .msg .quoteblock{border-left:3px solid #9fd3c7; padding:5px 8px; background:rgba(255,255,255,.05); border-radius:4px; margin-bottom:5px; font-size:12.2px; color:#d4dbe0;}
+  .msg .time{display:block; text-align:right; font-size:9.5px; color:var(--wa-sub); margin-top:3px;}
+  .msg .card{background:rgba(255,255,255,.06); border-radius:6px; padding:7px 9px; margin-top:5px; font-size:12.2px;}
+  .msg .card b{color:#fff;}
+  .tapbtn{margin-top:7px; display:inline-block; background:#0a3d33; border:1px solid #9fd3c7; color:#9fd3c7; padding:5px 14px; border-radius:16px; font-size:12px; cursor:pointer;}
+  .tapbtn:hover{background:#0e574a;}
+  .tapbtn.done{background:#9fd3c7; color:#0b141a; cursor:default;}
+  .confirm-action{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:7px;}
+  .confirm-action .tapbtn{margin-top:0;}
+  .confirm-hint{color:#ffd08a; font-size:11.5px; font-weight:700; animation:nudge .7s ease-in-out infinite alternate;}
+  .confirm-hint.done{color:#9fd3c7; animation:none;}
+  @keyframes nudge{from{transform:translateX(0);} to{transform:translateX(-5px);}}
+  .photo{width:220px; border-radius:8px; overflow:hidden; position:relative; background:#2e3336; cursor:zoom-in; box-shadow:0 2px 8px rgba(0,0,0,.28);}
+  .photo img{width:100%; height:auto; display:block;}
+  .photo .photo-label{position:absolute; left:7px; bottom:7px; padding:3px 7px; border-radius:10px; background:rgba(11,20,26,.82); color:#fff; font-size:9.5px; font-weight:600; letter-spacing:.02em;}
+  .photo-lightbox{position:fixed; inset:0; z-index:30; background:rgba(0,0,0,.88); display:flex; align-items:center; justify-content:center; padding:24px; cursor:zoom-out;}
+  .photo-lightbox img{display:block; max-width:min(92vw,720px); max-height:90vh; border-radius:10px; box-shadow:0 14px 50px rgba(0,0,0,.5);}
+  .photo-lightbox .close-photo{position:absolute; top:18px; right:22px; border:0; background:rgba(255,255,255,.14); color:#fff; width:38px; height:38px; border-radius:50%; font-size:24px; cursor:pointer;}
+
+  /* right panel */
+  .panel{flex:1; display:flex; flex-direction:column; gap:14px; min-width:0;}
+  .caption{background:#fff; border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:10px; padding:14px 18px; font-size:14.5px; line-height:1.5; min-height:76px;}
+  .caption b{color:var(--accent);}
+  .tables{flex:1; background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; overflow-y:auto;}
+  .tables h3{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#8a8578; margin:14px 0 6px;}
+  .tables h3:first-child{margin-top:0;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th{color:#8a8578; font-weight:600; text-align:left; padding:4px 8px; border-bottom:1px solid var(--line); font-size:11px;}
+  td{padding:5px 8px; border-bottom:1px solid #f1eee7;}
+  tr.new td{background:var(--accent-soft); animation:fadeRow 1.2s ease;}
+  @keyframes fadeRow{from{background:#f9d9ae;} to{background:var(--accent-soft);}}
+  .chip{display:inline-block; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:600;}
+  .chip.ok{background:#e3f2e9; color:var(--ok);} .chip.warn{background:#fdf0e0; color:var(--warn);} .chip.bad{background:#fbe9e7; color:var(--bad);}
+  .empty{color:#a49f93; font-size:12.5px; font-style:italic; padding:6px 0;}
+
+  /* controls */
+  .controls{display:flex; align-items:center; justify-content:center; gap:18px; padding:14px 0 22px;}
+  .btn{background:var(--ink); color:#fff; border:none; padding:10px 26px; border-radius:22px; font-size:14px; cursor:pointer;}
+  .btn:disabled{background:#c9c4b9; cursor:default;}
+  .btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--line);}
+  .dots{display:flex; gap:6px;}
+  .dot{width:7px; height:7px; border-radius:50%; background:#d9d4c9;}
+  .dot.on{background:var(--accent);}
+
+  /* overlays */
+  .overlay{position:fixed; inset:0; background:rgba(250,249,246,.97); display:flex; align-items:center; justify-content:center; z-index:10; padding:30px;}
+  .overlay .box{max-width:760px; max-height:calc(100vh - 40px); overflow-y:auto; padding:4px 8px; text-align:center;}
+  .overlay h1{font-size:30px; font-weight:700; margin-bottom:6px;}
+  .overlay h1 span{color:var(--accent);}
+  .overlay .tag{font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#8a8578; margin-bottom:22px;}
+  .overlay p{font-size:15.5px; line-height:1.6; color:#3d3a33; margin-bottom:14px;}
+  .overlay .fine{font-size:12.5px; color:#8a8578; margin-top:18px;}
+  .threecol{display:flex; gap:16px; margin:22px 0; text-align:left;}
+  .threecol div{flex:1; background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px;}
+  .threecol b{display:block; margin-bottom:6px; font-size:13.5px;}
+  .threecol span{font-size:12.8px; color:#55524a; line-height:1.45;}
+  .pilot-map{margin:14px 0 16px; padding:14px; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 6px 20px rgba(52,43,30,.06); text-align:left;}
+  .map-title{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#8a8578; margin-bottom:11px; font-weight:700;}
+  .map-stage{display:grid; grid-template-columns:1.35fr 18px .82fr 18px 1.08fr 18px .95fr 18px 1.05fr; align-items:stretch; gap:4px;}
+  .map-link{display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:19px; font-weight:700;}
+  .map-card{min-width:0; border:1px solid #e8e3d9; border-radius:10px; padding:10px 8px; background:#fff; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px;}
+  .map-card b{font-size:11.5px; line-height:1.2; color:#292722;}
+  .map-card small{display:block; font-size:9.5px; line-height:1.25; color:#777168;}
+  .brand-logo{width:29px; height:29px; object-fit:contain; display:block;}
+  .input-card{background:#fbfaf7; align-items:stretch; text-align:left; justify-content:flex-start; gap:5px;}
+  .input-card > b{font-size:10px; color:#8a8578; text-transform:uppercase; letter-spacing:.08em; margin-bottom:1px;}
+  .input-item{display:flex; align-items:center; gap:6px; padding:4px 5px; border-radius:7px; background:#fff; font-size:10.5px; color:#3d3a33; line-height:1.2;}
+  .input-item i{width:20px; height:20px; border-radius:6px; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; font-style:normal; flex:0 0 auto;}
+  .processor-card{gap:7px;}
+  .processor-pair{display:flex; align-items:center; justify-content:center; gap:9px;}
+  .processor-pair div{display:flex; flex-direction:column; align-items:center; gap:3px;}
+  .processor-pair .brand-logo{width:25px; height:25px;}
+  .processor-pair strong{font-size:10px;}
+  .confirm-card{background:#f1fbf5; border-color:#ccebd8;}
+  .data-card{background:#f8fbff;}
+  .data-logos{display:flex; align-items:center; gap:8px; margin-bottom:2px;}
+  .data-logos .brand-logo{width:25px; height:25px;}
+  .map-drop{text-align:center; font-size:9.5px; color:#8a8578; margin:9px 0 5px; text-transform:uppercase; letter-spacing:.06em;}
+  .result-rail{display:flex; align-items:center; justify-content:center; gap:9px; padding:8px 10px; border-radius:10px; background:#17171a; color:#fff;}
+  .result-node{display:flex; align-items:center; gap:7px; min-width:0;}
+  .result-node .brand-logo{width:24px; height:24px; filter:drop-shadow(0 0 1px rgba(255,255,255,.5));}
+  .result-node b{display:block; font-size:10.8px; color:#fff;}
+  .result-node small{display:block; font-size:9px; color:#bbb8b2;}
+  .engine-icon{width:28px; height:28px; border-radius:8px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; flex:0 0 auto;}
+  .rail-arrow{color:#f0a768; font-weight:700;}
+  .map-note{text-align:center; font-size:10px; color:#777168; margin-top:8px;}
+  @media(max-width:700px){
+    .map-stage{grid-template-columns:1fr;}
+    .map-link{transform:rotate(90deg); min-height:12px;}
+    .result-rail{flex-wrap:wrap;}
+  }
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">A DEMO FOR <span>THINK9</span></div>
+  <div class="sub">One week at one brand. The calculations below come from the attached code. Simulated data, real math.</div>
+</header>
+
+<!-- intro -->
+<div class="overlay" id="intro">
+  <div class="box">
+    <h1>From fragmented vendor conversations<br>to <span>a weekly action list</span></h1>
+    <div class="tag">An AI workflow for Think9's 30+ brands</div>
+    <p><b>What needs ordering, what is overstocked, and what needs no action?</b></p>
+    <p>This demo follows one simulated week at a fictional apparel brand. A supplier price message, a photographed delivery slip, an incomplete supplier message and a one-line order update go in. A Monday summary comes out showing what needs attention. The team only forwards a message, sends a photo, shares a call summary or types a line.</p>
+    <div class="pilot-map">
+      <div class="map-title">How the live pilot would work</div>
+      <div class="map-stage">
+        <div class="map-card input-card">
+          <b>What the team sends</b>
+          <div class="input-item"><i>↪</i><span>Forward chats or PDFs</span></div>
+          <div class="input-item"><i>▧</i><span>Photograph delivery slips</span></div>
+          <div class="input-item"><i>☎</i><span>After a call, send a one-line summary or voice note</span></div>
+        </div>
+        <div class="map-link">→</div>
+        <div class="map-card">
+          <img class="brand-logo" src="https://cdn.simpleicons.org/whatsapp/25D366" alt="WhatsApp logo">
+          <b>One WhatsApp Business number</b>
+          <small>single entry door</small>
+        </div>
+        <div class="map-link">→</div>
+        <div class="map-card processor-card">
+          <div class="processor-pair">
+            <div><img class="brand-logo" src="https://cdn.simpleicons.org/n8n/EA4B71" alt="n8n logo"><strong>n8n</strong></div>
+            <span>+</span>
+            <div><img class="brand-logo" src="https://cdn.simpleicons.org/anthropic/191919" alt="Anthropic logo"><strong>Claude</strong></div>
+          </div>
+          <small>route the input<br>and read the fields</small>
+        </div>
+        <div class="map-link">→</div>
+        <div class="map-card confirm-card">
+          <img class="brand-logo" src="https://cdn.simpleicons.org/whatsapp/25D366" alt="WhatsApp logo">
+          <b>Confirm in the same chat</b>
+          <small>nothing saves before the tap</small>
+        </div>
+        <div class="map-link">→</div>
+        <div class="map-card data-card">
+          <div class="data-logos">
+            <img class="brand-logo" src="https://cdn.simpleicons.org/airtable/18BFFF" alt="Airtable logo">
+            <span>+</span>
+            <img class="brand-logo" src="https://cdn.simpleicons.org/shopify/7AB55C" alt="Shopify logo">
+          </div>
+          <b>One confirmed data layer</b>
+          <small>Airtable or ERP<br>+ sales and stock</small>
+        </div>
+      </div>
+      <div class="map-drop">Confirmed vendor data + sales and stock feed the weekly calculation</div>
+      <div class="result-rail">
+        <div class="result-node"><span class="engine-icon">Σ</span><div><b>Calculation engine</b><small>working code included</small></div></div>
+        <span class="rail-arrow">→</span>
+        <div class="result-node"><img class="brand-logo" src="https://cdn.simpleicons.org/n8n/EA4B71" alt="n8n logo"><div><b>n8n sends</b><small>scheduled or urgent</small></div></div>
+        <span class="rail-arrow">→</span>
+        <div class="result-node"><img class="brand-logo" src="https://cdn.simpleicons.org/whatsapp/25D366" alt="WhatsApp logo"><div><b>WhatsApp</b><small>alerts + Monday note</small></div></div>
+      </div>
+      <div class="map-note">The connections are simulated. The calculation engine is working code included with the submission; it calculates stock cover, lead time and cash flags.</div>
+    </div>
+    <button class="btn" onclick="start()">Start the week →</button>
+    <div class="fine">~2 minutes · WhatsApp screens simulated · calculations from the real engine</div>
+  </div>
+</div>
+
+<!-- finale -->
+<div class="overlay hidden" id="finale">
+  <div class="box">
+    <h1>One brand, one week.<br><span>Now imagine 30.</span></h1>
+    <div class="threecol">
+      <div><b>Built once</b><span>The loop is the same for garments and juice. Each category adds a few rules, not a new system. Adding a brand means adding its files.</span></div>
+      <div><b>Prices stay private</b><span>Each brand sees only its own rows and terms. The central team sees everything, including which vendors serve more than one brand.</span></div>
+      <div><b>Brand 31 starts with the history</b><span>A new Foundery founder gets the vendor bench, the real lead times and the seasonal calendar on day one.</span></div>
+    </div>
+    <p style="font-size:13.5px;">Estimated pilot cost: roughly ₹10,000 a month, to be validated in week 1. Building the live connections is <b>weeks 1 and 2 of the 30-day plan</b>.</p>
+    <button class="btn ghost" onclick="returnToLastStep()">← Back to Monday note</button>
+    <button class="btn ghost" onclick="restart()">↺ Replay the week</button>
+  </div>
+</div>
+
+<div class="photo-lightbox hidden" id="photoLightbox" onclick="hidePhoto()" aria-label="Enlarged delivery challan">
+  <button class="close-photo" onclick="hidePhoto()" aria-label="Close image">×</button>
+  <img src="delivery-challan.jpg" alt="Delivery challan from Mahesh Textiles showing 300 organic cotton T-shirts received on 12 August 2026">
+</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="top">
+      <div class="avatar">S</div>
+      <div>
+        <div class="name">Supply Assistant</div>
+        <div class="status">Demo apparel brand · Priya's phone</div>
+      </div>
+    </div>
+    <div class="chat" id="chat"></div>
+  </div>
+
+  <div class="panel">
+    <div class="caption" id="caption">Press Next to begin the week.</div>
+    <div class="tables" id="tables">
+      <h3>Vendor quotes</h3>
+      <table><thead><tr><th>Vendor</th><th>Item</th><th>Price</th><th>MOQ</th><th>Lead time</th><th>Status</th></tr></thead><tbody id="t-quotes"><tr><td colspan="6" class="empty">Nothing captured yet.</td></tr></tbody></table>
+      <h3>Deliveries & reliability</h3>
+      <table><thead><tr><th>Vendor</th><th>Quoted</th><th>Actual</th><th>Note</th></tr></thead><tbody id="t-del"><tr><td colspan="4" class="empty">No deliveries observed yet.</td></tr></tbody></table>
+      <h3>Open orders (incoming stock)</h3>
+      <table><thead><tr><th>Variant</th><th>Qty</th><th>Expected</th></tr></thead><tbody id="t-po"><tr><td colspan="3" class="empty">None.</td></tr></tbody></table>
+      <h3 id="mathhead" class="hidden">Monday 7:00, the math per variant</h3>
+      <table class="hidden" id="matht"><thead><tr><th>Variant</th><th>Sells/wk*</th><th>Stock</th><th>Cover</th><th>Lead</th><th>Decision</th></tr></thead><tbody id="t-math"></tbody></table>
+      <div id="mathnote" class="hidden" style="font-size:11px;color:#8a8578;margin-top:4px;">*weighted 4-week average, recent weeks count more · spike weeks flagged, not blindly trusted</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn ghost" id="backBtn" onclick="back()" disabled>← Back</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn" id="nextBtn" onclick="next()">Next →</button>
+</div>
+
+<script>
+const chat = document.getElementById('chat');
+const cap = document.getElementById('caption');
+let stepIndex = -1;
+let quoteConfirmed = false;
+let deliveryConfirmed = false;
+
+function el(html){ const d=document.createElement('div'); d.innerHTML=html; return d.firstElementChild; }
+function addChat(html){ chat.appendChild(el(html)); chat.scrollTop = chat.scrollHeight; }
+function addRow(tbody, cells){
+  const tb=document.getElementById(tbody);
+  if(tb.querySelector('.empty')) tb.innerHTML='';
+  const tr=document.createElement('tr'); tr.className='new';
+  tr.innerHTML = cells.map(c=>`<td>${c}</td>`).join('');
+  tb.appendChild(tr);
+}
+
+function showPhoto(){ document.getElementById('photoLightbox').classList.remove('hidden'); }
+function hidePhoto(){ document.getElementById('photoLightbox').classList.add('hidden'); }
+
+const steps = [
+ { cap:`<b>Tuesday.</b> Mahesh (a cotton vendor in Indore) sends Priya a quote on normal WhatsApp. She forwards it to the system's number, two taps. That forward is the entire "data entry".`,
+   run(){ addChat(`<div class="day">Tuesday</div>`);
+     addChat(`<div class="msg out"><div class="fwd">↪ Forwarded</div><div class="quoteblock">Namaste madam ji. Rate for 100% organic cotton tee (180 GSM) — Rs 240/pc for 300 pcs. 1000 pcs can do 225. Delivery 3 weeks after advance. GST extra. Advance 50%. — Mahesh Textiles</div><span class="time">10:12</span></div>`); } },
+
+ { cap:`The AI reads the message and replies with what it understood. <b>Nothing is saved until Priya confirms.</b> Reading is the machine's job. Confirming is hers, ten seconds, while the context is still fresh. <i>Tap the ✅ to continue.</i>`,
+   run(){ addChat(`<div class="msg in">Got it.<div class="card"><b>Mahesh Textiles</b> (Indore)<br>Organic cotton tee · <b>₹240</b>/pc (₹225 @1000+)<br>MOQ <b>300</b> · lead time <b>21 days</b> · 50% advance · GST extra</div><div class="confirm-action"><span class="tapbtn" id="confirmQuoteBtn" onclick="confirmQuote()">✅ Confirm & continue</span><span class="confirm-hint" id="quoteHint">← Required to continue</span></div><span class="time">10:12</span></div>`);
+     document.getElementById('nextBtn').disabled = true; } },
+
+ { cap:`Saved. One clean row in the table, with a link back to the original message, so every number can be traced to its proof.`,
+   run(){ addRow('t-quotes', ['Mahesh Textiles','Org. cotton tee','₹240 (₹225@1k)','300','21 days','<span class="chip ok">confirmed</span>']); } },
+
+ { cap:`<b>Wednesday.</b> A delivery arrives with a paper challan in the box. Priya photographs it and sends the image to the same WhatsApp number.`,
+   run(){ addChat(`<div class="day">Wednesday</div>`);
+     addChat(`<div class="msg out"><div class="photo" onclick="showPhoto()" role="button" aria-label="Open delivery challan photo"><img src="delivery-challan.jpg" alt="Photographed delivery challan from Mahesh Textiles"><span class="photo-label">Photo · tap to enlarge</span></div><span class="time">16:40</span></div>`); } },
+
+ { cap:`The AI reads the image and extracts the delivery fields. It matches the challan to the existing order and calculates the actual lead time. <b>The delivery is not saved until Priya confirms the reading.</b>`,
+   run(){ addChat(`<div class="msg in">Extracted from the photo:<div class="card"><b>Vendor</b> · Mahesh Textiles<br><b>Product</b> · Organic cotton tee<br><b>Quantity</b> · 300 pcs<br><b>Received</b> · 12 Aug 2026<br><b>Matched order</b> · 17 Jul 2026<br><b>Actual lead time</b> · 26 days</div><div class="confirm-action"><span class="tapbtn" id="confirmDeliveryBtn" onclick="confirmDelivery()">✅ Confirm & continue</span><span class="confirm-hint" id="deliveryHint">← Required to continue</span></div><span class="time">16:41</span></div>`);
+     document.getElementById('nextBtn').disabled = true; } },
+
+ { cap:`Confirmed. Only now is the delivery saved. The table compares Mahesh's quoted 21 days with the observed 26, so future planning uses his real pace.`,
+   run(){ addChat(`<div class="msg in">Delivery saved. <b>Mahesh quoted 21 days and took 26.</b> Future plans use his observed pace.<span class="time">16:42</span></div>`);
+     addRow('t-del', ['Mahesh Textiles','21 days','<b>26 days</b>','<span class="chip warn">runs ~5 days late</span>']); } },
+
+ { cap:`<b>Thursday.</b> An incomplete supplier message arrives. The system does not guess. <b>It says what it could not confirm</b> and puts it on Monday's list as a question.`,
+   run(){ addChat(`<div class="day">Thursday</div>`);
+     addChat(`<div class="msg out"><div class="fwd">↪ Forwarded</div><div class="quoteblock">tee 210 rs good quality. delivery depends on season sometimes 2 week sometimes more. moq we can discuss — Ganga Knits, Ludhiana</div><span class="time">11:05</span></div>`);
+     addChat(`<div class="msg in">Price ₹210 read fine. But lead time is <i>"depends on season"</i> and MOQ is <i>"we can discuss"</i>. <b>I cannot plan on this quote.</b> Added to Monday's list for you.<span class="time">11:05</span></div>`);
+     addRow('t-quotes', ['Ganga Knits','Cotton tee','₹210','?','?','<span class="chip bad">unconfirmed, check</span>']); } },
+
+ { cap:`<b>Friday.</b> Priya places an order and tells the system in one typed line. The system counts the incoming stock and stops flagging that product. The expected date uses Mahesh's <b>real</b> 26 day pace, not his quoted 3 weeks.`,
+   run(){ addChat(`<div class="day">Friday</div>`);
+     addChat(`<div class="msg out">ordered 300 org cotton from Mahesh today<span class="time">09:30</span></div>`);
+     addChat(`<div class="msg in">Logged. <b>300 pcs incoming</b>. Expected around <b>9 Sep</b>, his real pace, not the quoted 3 weeks. I will watch for the challan.<span class="time">09:30</span></div>`);
+     addRow('t-po', ['Org. cotton tee','300','~9 Sep']); } },
+
+ { cap:`<b>Monday, 7:00 am.</b> The calculation engine—the working code attached to this submission—runs by itself. Website sales arrive from Shopify, the Amazon file is read from the shared folder, and the math runs <b>per size and variant</b>: how long stock lasts against how long a refill takes.`,
+   run(){ document.getElementById('mathhead').classList.remove('hidden');
+     document.getElementById('matht').classList.remove('hidden');
+     document.getElementById('mathnote').classList.remove('hidden');
+     addRow('t-math', ['Cotton-silk kurta','67.8','110','1.6 wk','4 wk','<span class="chip bad">ORDER NOW</span>']);
+     addRow('t-math', ['Premium tee','38.1 ⚠ spike','88','2.3 wk','2.6 wk','<span class="chip bad">CHECK, THEN ORDER</span>']);
+     addRow('t-math', ['Classic tee','20.0','210','10.5 wk','2 wk','<span class="chip warn">OVERSTOCKED</span>']);
+     addRow('t-math', ['Org. cotton tee','37.7','160 +300 inc.','4.2 wk','26 d real','<span class="chip ok">COVERED</span>']); } },
+
+ { cap:`<b>7:02 am.</b> The Monday note lands on WhatsApp, where it will actually be read. Organic cotton is covered, so it stays in the table but out of the note. <b>Nothing gets ordered or discounted without a human.</b> Forward, snap, type, tap, and this note. That is the entire system.`,
+   run(){ addChat(`<div class="day">Monday</div>`);
+     addChat(`<div class="msg in" style="max-width:95%">☀️ <b>Monday summary for the demo apparel brand</b><div class="card">🔴 <b>Cotton-silk kurta, order today.</b> About 68 a week, 110 in stock: <b>1.6 weeks of cover</b>. The Chennai vendor needs 4 weeks. Suggested <b>365 pcs</b>; advance ₹33,945.</div><div class="card">🔴 <b>Premium tee: confirm the spike before ordering.</b> Stock covers 2.3 weeks and the vendor needs 18 days. On current data, the suggested order is <b>275 pcs</b>, including Blinkit's PO for 150; advance ₹72,875. If last week's website spike was campaign-driven, tell me and I will recalculate.</div><div class="card">🟡 <b>Classic tee, overstocked.</b> 210 pieces represent ₹1.68 lakh in retail value. Clearing 80 could generate up to ₹63,920 before discount.</div><div class="card">⚠️ <b>Please check Ganga Knits.</b> Price ₹210 is clear; lead time and MOQ are not. I cannot plan on this quote until both are confirmed.</div><div class="card">🟠 <b>Future risk recorded.</b> Chennai dispatch may slow from late October. Nothing to do today; I will remind you on 1 October to contact the Vizag backup.</div><div class="card">💰 <b>Cash this week.</b> Both suggested orders need ₹1,06,820 in advances, above the ₹75,000 comfort line. The Classic clearance is one possible lever; confirm the discount and expected cash before relying on it.</div><span class="time">07:02</span></div>`); } },
+];
+
+// dots
+const dotsEl = document.getElementById('dots');
+steps.forEach(()=>dotsEl.appendChild(el('<div class="dot"></div>')));
+function paintDots(){ [...dotsEl.children].forEach((d,i)=>d.classList.toggle('on', i<=stepIndex)); }
+
+function start(){
+  document.getElementById('intro').classList.add('hidden');
+  quoteConfirmed = false;
+  deliveryConfirmed = false;
+  renderTo(0);
+}
+function stepNeedsConfirmation(index){
+  return (index===1 && !quoteConfirmed) || (index===4 && !deliveryConfirmed);
+}
+function next(){
+  if(stepNeedsConfirmation(stepIndex)) return;
+  if(stepIndex >= steps.length-1){
+    document.getElementById('finale').classList.remove('hidden');
+    return;
+  }
+  renderTo(stepIndex+1);
+}
+function back(){
+  if(stepIndex<=0) return;
+  renderTo(stepIndex-1);
+}
+function confirmQuote(){
+  quoteConfirmed = true;
+  renderTo(stepIndex+1);
+}
+function confirmDelivery(){
+  deliveryConfirmed = true;
+  renderTo(stepIndex+1);
+}
+function clearStage(){
+  chat.innerHTML='';
+  document.getElementById('t-quotes').innerHTML='<tr><td colspan="6" class="empty">Nothing captured yet.</td></tr>';
+  document.getElementById('t-del').innerHTML='<tr><td colspan="4" class="empty">No deliveries observed yet.</td></tr>';
+  document.getElementById('t-po').innerHTML='<tr><td colspan="3" class="empty">None.</td></tr>';
+  document.getElementById('t-math').innerHTML='';
+  document.getElementById('mathhead').classList.add('hidden');
+  document.getElementById('matht').classList.add('hidden');
+  document.getElementById('mathnote').classList.add('hidden');
+  stepIndex=-1;
+}
+function renderTo(target){
+  clearStage();
+  for(let i=0;i<=target;i++){
+    stepIndex=i;
+    cap.innerHTML=steps[i].cap;
+    steps[i].run();
+  }
+  stepIndex=target;
+  const confirmQuoteBtn=document.getElementById('confirmQuoteBtn');
+  if(confirmQuoteBtn && quoteConfirmed){
+    confirmQuoteBtn.classList.add('done');
+    confirmQuoteBtn.textContent='✓ Confirmed';
+    const quoteHint=document.getElementById('quoteHint');
+    quoteHint.classList.add('done');
+    quoteHint.textContent='Next is unlocked →';
+  }
+  const confirmDeliveryBtn=document.getElementById('confirmDeliveryBtn');
+  if(confirmDeliveryBtn && deliveryConfirmed){
+    confirmDeliveryBtn.classList.add('done');
+    confirmDeliveryBtn.textContent='✓ Confirmed';
+    const deliveryHint=document.getElementById('deliveryHint');
+    deliveryHint.classList.add('done');
+    deliveryHint.textContent='Next is unlocked →';
+  }
+  document.getElementById('nextBtn').disabled = stepNeedsConfirmation(stepIndex);
+  document.getElementById('backBtn').disabled = stepIndex<=0;
+  document.getElementById('nextBtn').textContent = stepIndex===steps.length-1 ? 'Finish →' : 'Next →';
+  paintDots();
+}
+function returnToLastStep(){
+  document.getElementById('finale').classList.add('hidden');
+  renderTo(steps.length-1);
+}
+function restart(){
+  document.getElementById('finale').classList.add('hidden');
+  quoteConfirmed=false;
+  deliveryConfirmed=false;
+  renderTo(0);
+}
+</script>
+</body>
+</html>
