@@ -1,4 +1,4 @@
-# Think9 AI Challenge — Interactive Demo
+# Think9 AI Challenge Interactive Demo
 
 This clickthrough follows one simulated week at a fictional apparel brand.
 
