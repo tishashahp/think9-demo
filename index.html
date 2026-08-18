@@ -65,6 +65,20 @@
   .chip{display:inline-block; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:600;}
   .chip.ok{background:#e3f2e9; color:var(--ok);} .chip.warn{background:#fdf0e0; color:var(--warn);} .chip.bad{background:#fbe9e7; color:var(--bad);}
   .empty{color:#a49f93; font-size:12.5px; font-style:italic; padding:6px 0;}
+  .mobile-summary{display:none;}
+  .mobile-summary-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:10px;}
+  .mobile-summary-head b{font-size:16px;}
+  .mobile-summary-head span{font-size:11px; color:#777168; text-align:right; line-height:1.3;}
+  .summary-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .summary-item{background:#fff; border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:9px; padding:10px 11px;}
+  .summary-item.urgent{border-left-color:var(--bad);}
+  .summary-item.watch{border-left-color:var(--warn);}
+  .summary-item b{display:block; color:#777168; font-size:10px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:3px;}
+  .summary-item strong{display:block; font-size:13px; line-height:1.25; margin-bottom:3px;}
+  .summary-item small{display:block; color:#5f5a51; font-size:11.5px; line-height:1.35;}
+  .summary-cash{margin-top:8px; padding:10px 12px; border-radius:9px; background:#17171a; color:#fff; font-size:12px; line-height:1.4;}
+  .summary-cash b{color:#ffd08a;}
+  .monday-summary{max-width:95%;}
 
   /* controls */
   .controls{display:flex; align-items:center; justify-content:center; gap:18px; padding:14px 0 22px;}
@@ -120,62 +134,82 @@
   .rail-arrow{color:#f0a768; font-weight:700;}
   .map-note{text-align:center; font-size:10px; color:#777168; margin-top:8px;}
   @media(max-width:700px){
-    header{
-      padding:14px 18px;
-      flex-wrap:wrap;
-    }
-    .stage{
-      flex-direction:column;
-      padding:14px;
-      gap:16px;
-    }
-    .phone{
-      width:100%;
-      min-width:0;
-      height:560px;
-    }
-    .panel{
-      width:100%;
-      min-width:0;
-    }
-    .tables{
-      max-height:430px;
-      overflow:auto;
-    }
-    table{
-      min-width:600px;
-    }
-    .controls{
-      position:sticky;
-      bottom:0;
-      z-index:8;
-      background:var(--paper);
-      border-top:1px solid var(--line);
-      padding:12px;
-    }
-    .overlay{
-      padding:10px;
-    }
-    .overlay .box{
-      width:100%;
-      max-height:calc(100vh - 20px);
-    }
-    .threecol{
-      flex-direction:column;
-    }
-    .map-stage{
-      grid-template-columns:1fr;
-    }
-    .map-link{
-      transform:rotate(90deg);
-      min-height:12px;
-    }
-    .result-rail{
-      flex-wrap:wrap;
-    }
-    .photo{
-      max-width:100%;
-    }
+    html,body{max-width:100%; overflow-x:hidden;}
+    body{display:block; padding-bottom:76px;}
+    header{padding:11px 15px; align-items:flex-start; gap:3px; flex-direction:column;}
+    header .brand{font-size:12px; line-height:1.2;}
+    header .sub{font-size:11.5px; line-height:1.35;}
+
+    .stage{display:flex; flex-direction:column; padding:12px 14px 24px; gap:12px; align-items:stretch;}
+    .stage>.panel{display:contents;}
+    .caption{order:1; width:100%; min-height:0; padding:12px 14px; font-size:14px; line-height:1.45; scroll-margin-top:10px;}
+    .mobile-summary{display:block; order:2; width:100%; padding:14px; border:1px solid var(--line); border-radius:12px; background:var(--accent-soft);}
+    .phone{order:3; width:100%; max-width:390px; min-width:0; height:560px; align-self:center; border-radius:22px;}
+    .phone .top{padding:11px 12px;}
+    .phone .top .name{font-size:14.5px;}
+    .phone .top .status{font-size:11.5px;}
+    .chat{padding:12px 9px;}
+    .msg{font-size:13.5px; line-height:1.45; max-width:90%;}
+    .msg .quoteblock,.msg .card{font-size:13px; line-height:1.42;}
+    .monday-summary{max-width:100%;}
+    .monday-summary .card{padding:9px 10px; margin-top:7px; border-left:3px solid #ffd08a;}
+    .photo{width:100%; max-width:280px;}
+
+    .tables{order:4; width:100%; max-height:370px; padding:14px 12px; overflow:auto;}
+    .tables h3{font-size:11.5px;}
+    table{min-width:620px; font-size:12px;}
+    th{font-size:10.5px;}
+
+    .controls{position:fixed; left:0; right:0; bottom:0; z-index:9; gap:10px; background:rgba(250,249,246,.97); border-top:1px solid var(--line); padding:10px 12px calc(10px + env(safe-area-inset-bottom)); box-shadow:0 -6px 24px rgba(22,22,26,.08);}
+    .controls .btn{min-width:102px; min-height:44px; padding:10px 16px; font-size:14px;}
+    .dots{gap:4px;}
+    .dot{width:6px; height:6px;}
+
+    .overlay{padding:0; align-items:stretch;}
+    .overlay .box{width:100%; max-width:none; max-height:100vh; padding:22px 18px calc(28px + env(safe-area-inset-bottom)); text-align:left; display:flex; flex-direction:column;}
+    .overlay h1{font-size:27px; line-height:1.08; margin-bottom:8px;}
+    .overlay .tag{font-size:11px; line-height:1.35; margin-bottom:18px;}
+    .overlay p{font-size:14.5px; line-height:1.5; margin-bottom:12px;}
+    #intro h1{order:1;}
+    #intro .tag{order:2;}
+    #intro p{order:3;}
+    #intro>.box>.btn{order:4; width:100%; min-height:48px; margin:6px 0 4px; font-size:15px;}
+    #intro .pilot-map{order:5;}
+    #intro .fine{order:6; text-align:center;}
+
+    .pilot-map{margin:16px 0 4px; padding:12px; border-radius:12px;}
+    .map-title{font-size:11px; line-height:1.3; margin-bottom:10px;}
+    .map-stage{grid-template-columns:1fr; gap:6px;}
+    .map-link{transform:rotate(90deg); min-height:16px; font-size:22px;}
+    .map-card{min-height:92px; padding:13px 12px; gap:6px;}
+    .map-card b{font-size:14px;}
+    .map-card small{font-size:12px;}
+    .brand-logo{width:36px; height:36px;}
+    .input-card{gap:7px;}
+    .input-card>b{font-size:11px;}
+    .input-item{gap:9px; padding:8px 9px; font-size:13px;}
+    .input-item i{width:29px; height:29px;}
+    .processor-card{padding:14px 10px;}
+    .processor-flow{gap:8px;}
+    .processor-step{width:70px; gap:5px;}
+    .processor-step .brand-logo,.stt-badge{width:32px; height:32px;}
+    .processor-step strong{font-size:11px;}
+    .processor-arrow{font-size:15px;}
+    .data-logos .brand-logo{width:34px; height:34px;}
+    .map-drop{font-size:10.5px; line-height:1.35; margin:12px 2px 8px;}
+    .result-rail{flex-direction:column; align-items:stretch; gap:5px; padding:12px;}
+    .result-node{justify-content:center;}
+    .result-node b{font-size:12px;}
+    .result-node small{font-size:10.5px;}
+    .rail-arrow{transform:rotate(90deg); align-self:center;}
+    .map-note{text-align:left; font-size:11.5px; line-height:1.45; margin-top:10px;}
+
+    #finale .box{text-align:center; justify-content:flex-start;}
+    .threecol{flex-direction:column; gap:9px; margin:14px 0;}
+    .threecol div{padding:12px;}
+    .threecol b{font-size:14px;}
+    .threecol span{font-size:13px;}
+    #finale .btn{width:100%; min-height:46px; margin-top:8px;}
   }
   .hidden{display:none !important;}
 </style>
@@ -286,6 +320,16 @@
 
   <div class="panel">
     <div class="caption" id="caption">Press Next to begin the week.</div>
+    <section class="mobile-summary hidden" id="mobileSummary" aria-label="Monday action summary">
+      <div class="mobile-summary-head"><b>Monday action summary</b><span>What needs attention now</span></div>
+      <div class="summary-grid">
+        <div class="summary-item urgent"><b>Order today</b><strong>Cotton-silk kurta</strong><small>1.6 weeks cover. Suggested 365 pcs. Advance ₹33,945.</small></div>
+        <div class="summary-item urgent"><b>Check, then order</b><strong>Premium tee</strong><small>Confirm the demand spike. Suggested 275 pcs. Advance ₹72,875.</small></div>
+        <div class="summary-item watch"><b>Overstocked</b><strong>Classic tee</strong><small>210 pieces on hand. Review a clearance for 80.</small></div>
+        <div class="summary-item watch"><b>Missing information</b><strong>Ganga Knits</strong><small>Confirm lead time and MOQ before using the quote.</small></div>
+      </div>
+      <div class="summary-cash"><b>Cash check</b> Suggested advances total ₹1,06,820, above the ₹75,000 comfort line. Future risk: Chennai may slow from late October.</div>
+    </section>
     <div class="tables" id="tables">
       <h3>Confirmed supplier terms</h3>
       <table><thead><tr><th>Vendor</th><th>Item</th><th>Price</th><th>MOQ</th><th>Lead time</th><th>Status</th></tr></thead><tbody id="t-quotes"><tr><td colspan="6" class="empty">Nothing captured yet.</td></tr></tbody></table>
@@ -372,8 +416,9 @@ const steps = [
      addRow('t-math', ['Org. cotton tee','37.7','160 +300 inc.','4.2 wk on hand','26 d real','<span class="chip ok">COVERED</span>']); } },
 
  { cap:`<b>7:02 am.</b> The Monday summary arrives on WhatsApp, where it will actually be read. Organic cotton is covered, so it stays in the table but does not need an alert. <b>Nothing gets ordered, discounted or sent to a supplier without approval.</b> Forward, snap, type, tap: that is the entire input process.`,
-   run(){ addChat(`<div class="day">Monday</div>`);
-     addChat(`<div class="msg in" style="max-width:95%">☀️ <b>Monday summary for the demo apparel brand</b><div class="card">🔴 <b>Cotton-silk kurta, order today.</b> About 68 a week, 110 in stock: <b>1.6 weeks of cover</b>. The Chennai vendor needs 4 weeks. Suggested <b>365 pcs</b>; advance ₹33,945.</div><div class="card">🔴 <b>Premium tee: confirm the spike before ordering.</b> Stock covers 2.3 weeks and the vendor needs 18 days. On current data, the suggested order is <b>275 pcs</b>, including Blinkit's PO for 150; advance ₹72,875. If last week's website spike was campaign-driven, tell me and I will recalculate.</div><div class="card">🟡 <b>Classic tee, overstocked.</b> 210 pieces represent ₹1.68 lakh in retail value. Clearing 80 could generate up to ₹63,920 before discount.</div><div class="card">⚠️ <b>Please check Ganga Knits.</b> Price ₹210 is clear; lead time and MOQ are not. I cannot use this for planning until both are confirmed.</div><div class="card">🟠 <b>Future risk recorded.</b> Chennai dispatch may slow from late October. Nothing to do today; I will remind you on 1 October to contact the Vizag backup.</div><div class="card">💰 <b>Cash this week.</b> Both suggested orders need ₹1,06,820 in advances, above the ₹75,000 comfort line. The Classic clearance is one possible lever; confirm the discount and expected cash before relying on it.</div><span class="time">07:02</span></div>`); } },
+   run(){ document.getElementById('mobileSummary').classList.remove('hidden');
+     addChat(`<div class="day">Monday</div>`);
+     addChat(`<div class="msg in monday-summary">☀️ <b>Monday summary for the demo apparel brand</b><div class="card">🔴 <b>Cotton-silk kurta, order today.</b> About 68 a week, 110 in stock: <b>1.6 weeks of cover</b>. The Chennai vendor needs 4 weeks. Suggested <b>365 pcs</b>; advance ₹33,945.</div><div class="card">🔴 <b>Premium tee: confirm the spike before ordering.</b> Stock covers 2.3 weeks and the vendor needs 18 days. On current data, the suggested order is <b>275 pcs</b>, including Blinkit's PO for 150; advance ₹72,875. If last week's website spike was campaign-driven, tell me and I will recalculate.</div><div class="card">🟡 <b>Classic tee, overstocked.</b> 210 pieces represent ₹1.68 lakh in retail value. Clearing 80 could generate up to ₹63,920 before discount.</div><div class="card">⚠️ <b>Please check Ganga Knits.</b> Price ₹210 is clear; lead time and MOQ are not. I cannot use this for planning until both are confirmed.</div><div class="card">🟠 <b>Future risk recorded.</b> Chennai dispatch may slow from late October. Nothing to do today; I will remind you on 1 October to contact the Vizag backup.</div><div class="card">💰 <b>Cash this week.</b> Both suggested orders need ₹1,06,820 in advances, above the ₹75,000 comfort line. The Classic clearance is one possible lever; confirm the discount and expected cash before relying on it.</div><span class="time">07:02</span></div>`); } },
 ];
 
 // dots
@@ -430,6 +475,7 @@ function clearStage(){
   document.getElementById('mathhead').classList.add('hidden');
   document.getElementById('matht').classList.add('hidden');
   document.getElementById('mathnote').classList.add('hidden');
+  document.getElementById('mobileSummary').classList.add('hidden');
   stepIndex=-1;
 }
 function renderTo(target){
@@ -461,6 +507,9 @@ function renderTo(target){
   document.getElementById('backBtn').textContent = stepIndex===0 ? '← Intro' : '← Back';
   document.getElementById('nextBtn').textContent = stepIndex===steps.length-1 ? 'Finish →' : 'Next →';
   paintDots();
+  if(typeof window!=='undefined' && window.innerWidth<=700){
+    window.requestAnimationFrame(()=>document.getElementById('caption').scrollIntoView({behavior:'smooth',block:'start'}));
+  }
 }
 function returnToLastStep(){
   document.getElementById('finale').classList.add('hidden');
