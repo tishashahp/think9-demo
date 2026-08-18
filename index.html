@@ -16,10 +16,10 @@
   header .brand{font-weight:700; letter-spacing:.14em; font-size:14px;}
   header .brand span{color:var(--accent);}
   header .sub{font-size:12.5px; color:#6b675f;}
-  .stage{flex:1; display:flex; gap:26px; padding:22px 28px; max-width:1180px; width:100%; margin:0 auto;}
+  .stage{flex:1; display:grid; grid-template-columns:minmax(300px,340px) minmax(0,1fr); grid-template-rows:auto auto minmax(0,1fr); gap:14px 26px; padding:22px 28px; max-width:1180px; width:100%; margin:0 auto;}
 
   /* phone */
-  .phone{width:340px; min-width:300px; background:var(--wa-bg); border-radius:26px; padding:10px; box-shadow:0 12px 40px rgba(0,0,0,.18); display:flex; flex-direction:column; height:640px;}
+  .phone{grid-column:1; grid-row:1 / span 3; width:340px; min-width:300px; background:var(--wa-bg); border-radius:26px; padding:10px; box-shadow:0 12px 40px rgba(0,0,0,.18); display:flex; flex-direction:column; height:640px;}
   .phone .top{background:var(--wa-panel); border-radius:18px 18px 0 0; padding:12px 14px; display:flex; align-items:center; gap:10px;}
   .avatar{width:34px; height:34px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;}
   .phone .top .name{color:var(--wa-text); font-size:14px; font-weight:600;}
@@ -50,11 +50,26 @@
   .photo-lightbox img{display:block; max-width:min(92vw,720px); max-height:90vh; border-radius:10px; box-shadow:0 14px 50px rgba(0,0,0,.5);}
   .photo-lightbox .close-photo{position:absolute; top:18px; right:22px; border:0; background:rgba(255,255,255,.14); color:#fff; width:38px; height:38px; border-radius:50%; font-size:24px; cursor:pointer;}
 
-  /* right panel */
-  .panel{flex:1; display:flex; flex-direction:column; gap:14px; min-width:0;}
-  .caption{background:#fff; border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:10px; padding:14px 18px; font-size:14.5px; line-height:1.5; min-height:76px;}
+  /* explanation and data layer */
+  .caption{grid-column:2; grid-row:1; background:#fff; border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:10px; padding:14px 18px; font-size:14.5px; line-height:1.5; min-height:76px;}
   .caption b{color:var(--accent);}
-  .tables{flex:1; background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; overflow-y:auto;}
+  .data-pulse{grid-column:2; grid-row:2; display:flex; align-items:center; gap:11px; padding:10px 12px; border:1px solid #bfe8ef; border-radius:11px; background:#f1fbfd; box-shadow:0 4px 14px rgba(24,143,168,.08);}
+  .data-pulse.active{animation:dataPulse .55s ease;}
+  @keyframes dataPulse{0%{transform:scale(.985); background:#d9f6fb;}100%{transform:none; background:#f1fbfd;}}
+  .data-pulse-logo,.data-layer-logo{width:30px; height:30px; flex:0 0 auto; object-fit:contain;}
+  .data-pulse-copy{min-width:0; flex:1;}
+  .data-pulse-copy b{display:block; font-size:12px; color:#16697a; margin-bottom:2px;}
+  .data-pulse-copy span{display:block; font-size:12.5px; line-height:1.35; color:#3d565b;}
+  .data-pulse-badge{font-size:10px; font-weight:700; color:#16697a; background:#d9f4f8; border-radius:20px; padding:4px 8px; white-space:nowrap;}
+  .data-pulse button{border:0; background:transparent; color:#16697a; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap; padding:6px 2px;}
+  .tables{grid-column:2; grid-row:3; min-height:0; background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; overflow-y:auto; scroll-margin-top:12px;}
+  .tables.reveal{animation:tableReveal .65s ease;}
+  @keyframes tableReveal{0%{box-shadow:0 0 0 5px rgba(24,183,215,.35);}100%{box-shadow:none;}}
+  .data-layer-heading{display:flex; align-items:center; gap:10px; padding-bottom:12px; margin-bottom:4px; border-bottom:1px solid var(--line);}
+  .data-layer-heading div{min-width:0; flex:1;}
+  .data-layer-heading b{display:block; font-size:14px;}
+  .data-layer-heading span{display:block; margin-top:2px; font-size:11.5px; color:#777168; line-height:1.3;}
+  .data-layer-count{font-size:10.5px!important; font-weight:700; color:#16697a!important; background:#e0f6fa; padding:4px 8px; border-radius:20px; white-space:nowrap; flex:0 0 auto!important;}
   .tables h3{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#8a8578; margin:14px 0 6px;}
   .tables h3:first-child{margin-top:0;}
   table{width:100%; border-collapse:collapse; font-size:12.5px;}
@@ -79,6 +94,8 @@
   .summary-cash{margin-top:8px; padding:10px 12px; border-radius:9px; background:#17171a; color:#fff; font-size:12px; line-height:1.4;}
   .summary-cash b{color:#ffd08a;}
   .monday-summary{max-width:95%;}
+
+  .scroll-hint{display:none;}
 
   /* controls */
   .controls{display:flex; align-items:center; justify-content:center; gap:18px; padding:14px 0 22px;}
@@ -141,10 +158,14 @@
     header .sub{font-size:11.5px; line-height:1.35;}
 
     .stage{display:flex; flex-direction:column; padding:12px 14px 24px; gap:12px; align-items:stretch;}
-    .stage>.panel{display:contents;}
     .caption{order:1; width:100%; min-height:0; padding:12px 14px; font-size:14px; line-height:1.45; scroll-margin-top:10px;}
-    .mobile-summary{display:block; order:2; width:100%; padding:14px; border:1px solid var(--line); border-radius:12px; background:var(--accent-soft);}
-    .phone{order:3; width:100%; max-width:390px; min-width:0; height:560px; align-self:center; border-radius:22px;}
+    .data-pulse{order:2; width:100%; display:grid; grid-template-columns:30px minmax(0,1fr) auto; gap:5px 9px; padding:10px 11px;}
+    .data-pulse-copy b{font-size:12px;}
+    .data-pulse-copy span{font-size:12px;}
+    .data-pulse-badge{grid-column:2; justify-self:start;}
+    .data-pulse button{grid-column:3; grid-row:1 / span 2; align-self:center; font-size:11.5px;}
+    .mobile-summary{display:block; order:3; width:100%; padding:14px; border:1px solid var(--line); border-radius:12px; background:var(--accent-soft);}
+    .phone{order:4; width:100%; max-width:390px; min-width:0; height:560px; align-self:center; border-radius:22px;}
     .phone .top{padding:11px 12px;}
     .phone .top .name{font-size:14.5px;}
     .phone .top .status{font-size:11.5px;}
@@ -155,10 +176,22 @@
     .monday-summary .card{padding:9px 10px; margin-top:7px; border-left:3px solid #ffd08a;}
     .photo{width:100%; max-width:280px;}
 
-    .tables{order:4; width:100%; max-height:370px; padding:14px 12px; overflow:auto;}
+    .tables{order:5; width:100%; max-height:none; padding:14px 12px; overflow:visible;}
+    .data-layer-heading{align-items:flex-start;}
+    .data-layer-heading b{font-size:14px;}
+    .data-layer-heading span{font-size:11.5px;}
     .tables h3{font-size:11.5px;}
-    table{min-width:620px; font-size:12px;}
-    th{font-size:10.5px;}
+    .tables table,.tables tbody{display:block; width:100%; min-width:0;}
+    .tables thead{display:none;}
+    .tables tr{display:block; margin-bottom:8px; padding:10px 11px; border:1px solid var(--line); border-radius:10px; background:#fff;}
+    .tables tr.new{background:var(--accent-soft);}
+    .tables td{display:grid; grid-template-columns:minmax(92px,34%) minmax(0,1fr); gap:8px; padding:3px 0; border:0; font-size:12.5px; line-height:1.35; overflow-wrap:anywhere;}
+    .tables td:not(.empty)::before{content:attr(data-label); color:#8a8578; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;}
+    .tables td.empty{display:block; color:#8a8578;}
+
+    .scroll-hint{position:fixed; right:13px; bottom:calc(78px + env(safe-area-inset-bottom)); z-index:8; display:flex; align-items:center; gap:7px; border:1px solid #bfe8ef; border-radius:22px; background:#fff; color:#16697a; padding:8px 11px; box-shadow:0 8px 24px rgba(0,0,0,.16); font-size:11.5px; font-weight:700; cursor:pointer; animation:hintFloat 1.2s ease-in-out infinite alternate;}
+    .scroll-hint img{width:20px; height:20px;}
+    @keyframes hintFloat{from{transform:translateY(0);}to{transform:translateY(-4px);}}
 
     .controls{position:fixed; left:0; right:0; bottom:0; z-index:9; gap:10px; background:rgba(250,249,246,.97); border-top:1px solid var(--line); padding:10px 12px calc(10px + env(safe-area-inset-bottom)); box-shadow:0 -6px 24px rgba(22,22,26,.08);}
     .controls .btn{min-width:102px; min-height:44px; padding:10px 16px; font-size:14px;}
@@ -307,6 +340,18 @@
 </div>
 
 <div class="stage">
+  <div class="caption" id="caption">Press Next to begin the week.</div>
+
+  <aside class="data-pulse" id="dataPulse" aria-live="polite">
+    <img class="data-pulse-logo" src="https://cdn.simpleicons.org/airtable/18BFFF" alt="Airtable">
+    <div class="data-pulse-copy">
+      <b id="dataPulseTitle">Airtable is ready</b>
+      <span id="dataPulseDetail">Confirmed information will appear here as the week progresses.</span>
+    </div>
+    <span class="data-pulse-badge" id="dataPulseBadge">0 records</span>
+    <button type="button" onclick="scrollToData()">View records ↓</button>
+  </aside>
+
   <div class="phone">
     <div class="top">
       <div class="avatar">S</div>
@@ -318,31 +363,38 @@
     <div class="chat" id="chat"></div>
   </div>
 
-  <div class="panel">
-    <div class="caption" id="caption">Press Next to begin the week.</div>
-    <section class="mobile-summary hidden" id="mobileSummary" aria-label="Monday action summary">
-      <div class="mobile-summary-head"><b>Monday action summary</b><span>What needs attention now</span></div>
-      <div class="summary-grid">
-        <div class="summary-item urgent"><b>Order today</b><strong>Cotton-silk kurta</strong><small>1.6 weeks cover. Suggested 365 pcs. Advance ₹33,945.</small></div>
-        <div class="summary-item urgent"><b>Check, then order</b><strong>Premium tee</strong><small>Confirm the demand spike. Suggested 275 pcs. Advance ₹72,875.</small></div>
-        <div class="summary-item watch"><b>Overstocked</b><strong>Classic tee</strong><small>210 pieces on hand. Review a clearance for 80.</small></div>
-        <div class="summary-item watch"><b>Missing information</b><strong>Ganga Knits</strong><small>Confirm lead time and MOQ before using the quote.</small></div>
-      </div>
-      <div class="summary-cash"><b>Cash check</b> Suggested advances total ₹1,06,820, above the ₹75,000 comfort line. Future risk: Chennai may slow from late October.</div>
-    </section>
-    <div class="tables" id="tables">
-      <h3>Confirmed supplier terms</h3>
-      <table><thead><tr><th>Vendor</th><th>Item</th><th>Price</th><th>MOQ</th><th>Lead time</th><th>Status</th></tr></thead><tbody id="t-quotes"><tr><td colspan="6" class="empty">Nothing captured yet.</td></tr></tbody></table>
-      <h3>Deliveries & reliability</h3>
-      <table><thead><tr><th>Vendor</th><th>Promised</th><th>Actual</th><th>Note</th></tr></thead><tbody id="t-del"><tr><td colspan="4" class="empty">No deliveries observed yet.</td></tr></tbody></table>
-      <h3>Open orders (incoming stock)</h3>
-      <table><thead><tr><th>Variant</th><th>Qty</th><th>Expected</th></tr></thead><tbody id="t-po"><tr><td colspan="3" class="empty">None.</td></tr></tbody></table>
-      <h3 id="mathhead" class="hidden">Monday 7:00, the math per variant</h3>
-      <table class="hidden" id="matht"><thead><tr><th>Variant</th><th>Sells/wk*</th><th>Stock</th><th>Current cover</th><th>Lead</th><th>Action</th></tr></thead><tbody id="t-math"></tbody></table>
-      <div id="mathnote" class="hidden" style="font-size:11px;color:#8a8578;margin-top:4px;">*weighted 4-week average, recent weeks count more · spike weeks flagged, not blindly trusted</div>
+  <section class="mobile-summary hidden" id="mobileSummary" aria-label="Monday action summary">
+    <div class="mobile-summary-head"><b>Monday action summary</b><span>What needs attention now</span></div>
+    <div class="summary-grid">
+      <div class="summary-item urgent"><b>Order today</b><strong>Cotton-silk kurta</strong><small>1.6 weeks cover. Suggested 365 pcs. Advance ₹33,945.</small></div>
+      <div class="summary-item urgent"><b>Check, then order</b><strong>Premium tee</strong><small>Confirm the demand spike. Suggested 275 pcs. Advance ₹72,875.</small></div>
+      <div class="summary-item watch"><b>Overstocked</b><strong>Classic tee</strong><small>210 pieces on hand. Review a clearance for 80.</small></div>
+      <div class="summary-item watch"><b>Missing information</b><strong>Ganga Knits</strong><small>Confirm lead time and MOQ before using the quote.</small></div>
     </div>
+    <div class="summary-cash"><b>Cash check</b> Suggested advances total ₹1,06,820, above the ₹75,000 comfort line. Future risk: Chennai may slow from late October.</div>
+  </section>
+
+  <div class="tables" id="tables">
+    <div class="data-layer-heading">
+      <img class="data-layer-logo" src="https://cdn.simpleicons.org/airtable/18BFFF" alt="Airtable">
+      <div><b>Airtable pilot data layer</b><span>Records created from the confirmed WhatsApp inputs in this demo</span></div>
+      <span class="data-layer-count" id="tableRecordCount">0 records</span>
+    </div>
+    <h3>Confirmed supplier terms</h3>
+    <table><thead><tr><th>Vendor</th><th>Item</th><th>Price</th><th>MOQ</th><th>Lead time</th><th>Status</th></tr></thead><tbody id="t-quotes"><tr><td colspan="6" class="empty">Nothing captured yet.</td></tr></tbody></table>
+    <h3>Deliveries &amp; reliability</h3>
+    <table><thead><tr><th>Vendor</th><th>Promised</th><th>Actual</th><th>Note</th></tr></thead><tbody id="t-del"><tr><td colspan="4" class="empty">No deliveries observed yet.</td></tr></tbody></table>
+    <h3>Open orders (incoming stock)</h3>
+    <table><thead><tr><th>Variant</th><th>Qty</th><th>Expected</th></tr></thead><tbody id="t-po"><tr><td colspan="3" class="empty">None.</td></tr></tbody></table>
+    <h3 id="mathhead" class="hidden">Monday 7:00, the math per variant</h3>
+    <table class="hidden" id="matht"><thead><tr><th>Variant</th><th>Sells/wk*</th><th>Stock</th><th>Current cover</th><th>Lead</th><th>Action</th></tr></thead><tbody id="t-math"></tbody></table>
+    <div id="mathnote" class="hidden" style="font-size:11px;color:#8a8578;margin-top:4px;">*weighted 4-week average, recent weeks count more · spike weeks flagged, not blindly trusted</div>
   </div>
 </div>
+
+<button class="scroll-hint hidden" id="scrollHint" type="button" onclick="scrollToData()" aria-label="Scroll to Airtable records">
+  <img src="https://cdn.simpleicons.org/airtable/18BFFF" alt=""><span id="scrollHintLabel">Airtable · 0 records ↓</span>
+</button>
 
 <div class="controls">
   <button class="btn ghost" id="backBtn" onclick="back()" disabled>← Back</button>
@@ -357,14 +409,56 @@ let stepIndex = -1;
 let quoteConfirmed = false;
 let deliveryConfirmed = false;
 
+const rowLabels = {
+  't-quotes':['Vendor','Item','Price','MOQ','Lead time','Status'],
+  't-del':['Vendor','Promised','Actual','Note'],
+  't-po':['Variant','Quantity','Expected'],
+  't-math':['Variant','Sells/week','Stock','Current cover','Lead time','Action']
+};
+
+const dataLayerStates = [
+  {title:'Nothing saved yet', detail:'The vendor message is visible, but Airtable waits for Priya to confirm the extracted fields.', count:0},
+  {title:'Awaiting confirmation', detail:'The AI has prepared the supplier record. It has not entered Airtable yet.', count:0},
+  {title:'Supplier record saved', detail:'Mahesh Textiles · ₹240/pc · MOQ 300 · 21-day promised lead time.', count:1},
+  {title:'Photo received', detail:'The existing supplier record remains visible while the delivery photo is processed.', count:1},
+  {title:'Awaiting delivery confirmation', detail:'The challan fields are ready, but the delivery row has not been saved yet.', count:1},
+  {title:'Delivery record saved', detail:'Mahesh Textiles · 21 days promised · 26 days actual · about 5 days late.', count:2},
+  {title:'Incomplete quote flagged', detail:'Ganga Knits · ₹210 captured · MOQ and lead time marked for follow-up.', count:3},
+  {title:'Open order saved', detail:'Organic cotton tee · 300 pieces incoming · expected around 9 September.', count:4},
+  {title:'Stock calculation updated', detail:'Four variants checked against sales, stock and observed supplier lead times.', count:8},
+  {title:'Weekly action list ready', detail:'Two urgent actions, one overstock flag and one supplier-information check.', count:8}
+];
+
 function el(html){ const d=document.createElement('div'); d.innerHTML=html; return d.firstElementChild; }
 function addChat(html){ chat.appendChild(el(html)); chat.scrollTop = chat.scrollHeight; }
 function addRow(tbody, cells){
   const tb=document.getElementById(tbody);
   if(tb.querySelector('.empty')) tb.innerHTML='';
   const tr=document.createElement('tr'); tr.className='new';
-  tr.innerHTML = cells.map(c=>`<td>${c}</td>`).join('');
+  tr.innerHTML = cells.map((c,i)=>`<td data-label="${rowLabels[tbody][i]}">${c}</td>`).join('');
   tb.appendChild(tr);
+}
+
+function updateDataLayer(index){
+  const state=dataLayerStates[index] || dataLayerStates[0];
+  const noun=state.count===1 ? 'record' : 'records';
+  document.getElementById('dataPulseTitle').textContent=state.title;
+  document.getElementById('dataPulseDetail').textContent=state.detail;
+  document.getElementById('dataPulseBadge').textContent=`${state.count} ${noun}`;
+  document.getElementById('tableRecordCount').textContent=`${state.count} ${noun}`;
+  document.getElementById('scrollHintLabel').textContent=`Airtable · ${state.count} ${noun} ↓`;
+  const pulse=document.getElementById('dataPulse');
+  pulse.classList.remove('active');
+  void pulse.offsetWidth;
+  pulse.classList.add('active');
+}
+
+function scrollToData(){
+  const data=document.getElementById('tables');
+  data.scrollIntoView({behavior:'smooth',block:'start'});
+  data.classList.remove('reveal');
+  void data.offsetWidth;
+  data.classList.add('reveal');
 }
 
 function showPhoto(){ document.getElementById('photoLightbox').classList.remove('hidden'); }
@@ -379,7 +473,7 @@ const steps = [
    run(){ addChat(`<div class="msg in">Got it.<div class="card"><b>Mahesh Textiles</b> (Indore)<br>Organic cotton tee · <b>₹240</b>/pc (₹225 @1000+)<br>MOQ <b>300</b> · lead time <b>21 days</b> · 50% advance · GST extra</div><div class="confirm-action"><span class="tapbtn" id="confirmQuoteBtn" onclick="confirmQuote()">✅ Confirm & continue</span><span class="confirm-hint" id="quoteHint">← Required to continue</span></div><span class="time">10:12</span></div>`);
      document.getElementById('nextBtn').disabled = true; } },
 
- { cap:`Saved. One clean row in the table, with a link back to the original message, so every number can be traced to its proof.`,
+ { cap:`Saved. <b>The Airtable card below shows exactly what was entered:</b> vendor, price, MOQ and lead time. Tap “View records” to see the full data layer and trace each number back to its proof.`,
    run(){ addRow('t-quotes', ['Mahesh Textiles','Org. cotton tee','₹240 (₹225@1k)','300','21 days','<span class="chip ok">confirmed</span>']); } },
 
  { cap:`<b>Wednesday.</b> A delivery arrives with a paper challan in the box. Priya photographs it and sends the image to the same WhatsApp number.`,
@@ -390,17 +484,17 @@ const steps = [
    run(){ addChat(`<div class="msg in">Extracted from the photo:<div class="card"><b>Vendor</b> · Mahesh Textiles<br><b>Product</b> · Organic cotton tee<br><b>Quantity</b> · 300 pcs<br><b>Received</b> · 12 Aug 2026<br><b>Matched order</b> · 17 Jul 2026<br><b>Actual lead time</b> · 26 days</div><div class="confirm-action"><span class="tapbtn" id="confirmDeliveryBtn" onclick="confirmDelivery()">✅ Confirm & continue</span><span class="confirm-hint" id="deliveryHint">← Required to continue</span></div><span class="time">16:41</span></div>`);
      document.getElementById('nextBtn').disabled = true; } },
 
- { cap:`Confirmed. Only now is the delivery saved. The table compares Mahesh's promised 21 days with the observed 26, so future planning uses his real pace.`,
+ { cap:`Confirmed. <b>The Airtable card below now shows the delivery record:</b> 21 days promised and 26 days actual. Future planning can use Mahesh's real pace.`,
    run(){ addChat(`<div class="msg in">Delivery saved. <b>Mahesh promised 21 days and took 26.</b> Future plans use his observed pace.<span class="time">16:42</span></div>`);
      addRow('t-del', ['Mahesh Textiles','21 days','<b>26 days</b>','<span class="chip warn">runs ~5 days late</span>']); } },
 
- { cap:`<b>Thursday.</b> An incomplete supplier message arrives. The system does not guess. <b>It says what it could not confirm</b> and puts it on Monday's list as a question.`,
+ { cap:`<b>Thursday.</b> An incomplete supplier message arrives. The system does not guess. <b>Airtable saves the clear price but visibly flags the missing MOQ and lead time</b> for Monday's follow-up.`,
    run(){ addChat(`<div class="day">Thursday</div>`);
      addChat(`<div class="msg out"><div class="fwd">↪ Forwarded</div><div class="quoteblock">tee 210 rs good quality. delivery depends on season sometimes 2 week sometimes more. moq we can discuss - Ganga Knits, Ludhiana</div><span class="time">11:05</span></div>`);
      addChat(`<div class="msg in">Price ₹210 is clear. But lead time is <i>"depends on season"</i> and MOQ is <i>"we can discuss"</i>. <b>I cannot use this for planning yet.</b> Added to Monday's list for you.<span class="time">11:05</span></div>`);
      addRow('t-quotes', ['Ganga Knits','Cotton tee','₹210','?','?','<span class="chip bad">unconfirmed, check</span>']); } },
 
- { cap:`<b>Friday.</b> Priya places an order and tells the system in one typed line. The system counts the incoming stock and stops flagging that product. The expected date uses Mahesh's <b>real</b> 26 day pace, not his promised 3 weeks.`,
+ { cap:`<b>Friday.</b> Priya places an order and tells the system in one typed line. <b>The open-order record appears in Airtable</b>, incoming stock is counted and the expected date uses Mahesh's real 26-day pace.`,
    run(){ addChat(`<div class="day">Friday</div>`);
      addChat(`<div class="msg out">ordered 300 org cotton from Mahesh today<span class="time">09:30</span></div>`);
      addChat(`<div class="msg in">Logged. <b>300 pcs incoming</b>. Expected around <b>9 Sep</b>, using his real pace rather than the promised 3 weeks. I will watch for the challan.<span class="time">09:30</span></div>`);
@@ -476,6 +570,7 @@ function clearStage(){
   document.getElementById('matht').classList.add('hidden');
   document.getElementById('mathnote').classList.add('hidden');
   document.getElementById('mobileSummary').classList.add('hidden');
+  document.getElementById('scrollHint').classList.add('hidden');
   stepIndex=-1;
 }
 function renderTo(target){
@@ -506,6 +601,8 @@ function renderTo(target){
   document.getElementById('backBtn').disabled = false;
   document.getElementById('backBtn').textContent = stepIndex===0 ? '← Intro' : '← Back';
   document.getElementById('nextBtn').textContent = stepIndex===steps.length-1 ? 'Finish →' : 'Next →';
+  updateDataLayer(stepIndex);
+  document.getElementById('scrollHint').classList.remove('hidden');
   paintDots();
   if(typeof window!=='undefined' && window.innerWidth<=700){
     window.requestAnimationFrame(()=>document.getElementById('caption').scrollIntoView({behavior:'smooth',block:'start'}));
