@@ -114,6 +114,7 @@
   .overlay .tag{font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#8a8578; margin-bottom:22px;}
   .overlay p{font-size:15.5px; line-height:1.6; color:#3d3a33; margin-bottom:14px;}
   .overlay .fine{font-size:12.5px; color:#8a8578; margin-top:18px;}
+  .intro-more{display:none;}
   .threecol{display:flex; gap:16px; margin:22px 0; text-align:left;}
   .threecol div{flex:1; background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px;}
   .threecol b{display:block; margin-bottom:6px; font-size:13.5px;}
@@ -160,6 +161,7 @@
     .stage{display:flex; flex-direction:column; padding:12px 14px 24px; gap:12px; align-items:stretch;}
     .caption{order:1; width:100%; min-height:0; padding:12px 14px; font-size:14px; line-height:1.45; scroll-margin-top:10px;}
     .data-pulse{order:2; width:100%; display:grid; grid-template-columns:30px minmax(0,1fr) auto; gap:5px 9px; padding:10px 11px;}
+    .data-pulse{min-height:82px;}
     .data-pulse-copy b{font-size:12px;}
     .data-pulse-copy span{font-size:12px;}
     .data-pulse-badge{grid-column:2; justify-self:start;}
@@ -182,7 +184,7 @@
     .monday-summary .card{padding:9px 10px; margin-top:7px; border-left:3px solid #ffd08a;}
     .photo{width:100%; max-width:280px;}
 
-    .tables{order:6; width:100%; max-height:none; padding:14px 12px; overflow:visible;}
+    .tables{order:6; width:100%; height:560px; min-height:560px; max-height:560px; padding:14px 12px; overflow-y:auto; overscroll-behavior:contain;}
     .data-layer-heading{align-items:flex-start;}
     .data-layer-heading b{font-size:14px;}
     .data-layer-heading span{font-size:11.5px;}
@@ -213,8 +215,11 @@
     #intro .tag{order:2;}
     #intro p{order:3;}
     #intro>.box>.btn{order:4; width:100%; min-height:48px; margin:6px 0 4px; font-size:15px;}
-    #intro .pilot-map{order:5;}
-    #intro .fine{order:6; text-align:center;}
+    #intro .intro-more{order:5; display:flex; width:100%; align-items:center; justify-content:center; gap:7px; border:0; background:transparent; color:var(--accent); padding:9px 4px 12px; font-size:13px; font-weight:700; cursor:pointer;}
+    #intro .intro-more span{display:inline-block; animation:moreNudge .8s ease-in-out infinite alternate;}
+    @keyframes moreNudge{from{transform:translateY(0);}to{transform:translateY(4px);}}
+    #intro .pilot-map{order:6;}
+    #intro .fine{order:7; text-align:center;}
 
     .pilot-map{margin:16px 0 4px; padding:12px; border-radius:12px;}
     .map-title{font-size:11px; line-height:1.3; margin-bottom:10px;}
@@ -321,6 +326,7 @@
       <div class="map-note">For voice notes, speech-to-text runs before Claude extracts the fields. The live connections are simulated. The calculation engine is working code included with the submission; it calculates stock cover, lead time and cash flags.</div>
     </div>
     <button class="btn" onclick="start()">Start the week →</button>
+    <button class="intro-more" type="button" onclick="showPilotMap()">See how the live pilot works <span>↓</span></button>
     <div class="fine">~2 minutes · WhatsApp screens simulated · calculations from the real engine</div>
   </div>
 </div>
@@ -462,15 +468,12 @@ function updateDataLayer(index){
   pulse.classList.add('active');
 }
 
-function setMobileView(view,fromUser=false){
+function setMobileView(view){
   const stage=document.getElementById('stage');
   stage.classList.toggle('mobile-view-whatsapp',view==='whatsapp');
   stage.classList.toggle('mobile-view-airtable',view==='airtable');
   document.getElementById('viewWhatsApp').classList.toggle('active',view==='whatsapp');
   document.getElementById('viewAirtable').classList.toggle('active',view==='airtable');
-  if(fromUser && typeof window!=='undefined' && window.innerWidth<=700){
-    window.requestAnimationFrame(()=>document.querySelector('.mobile-view-toggle').scrollIntoView({behavior:'smooth',block:'start'}));
-  }
 }
 
 function scrollToData(){
@@ -487,6 +490,7 @@ function scrollToData(){
 
 function showPhoto(){ document.getElementById('photoLightbox').classList.remove('hidden'); }
 function hidePhoto(){ document.getElementById('photoLightbox').classList.add('hidden'); }
+function showPilotMap(){ document.querySelector('.pilot-map').scrollIntoView({behavior:'smooth',block:'start'}); }
 
 const steps = [
  { cap:`<b>Tuesday.</b> Mahesh (a cotton vendor in Indore) sends Priya his prices and terms on normal WhatsApp. She forwards the message to the system's number, two taps. That forward is the entire "data entry".`,
@@ -627,9 +631,6 @@ function renderTo(target){
   updateDataLayer(stepIndex);
   setMobileView([2,5,8].includes(stepIndex) ? 'airtable' : 'whatsapp');
   paintDots();
-  if(typeof window!=='undefined' && window.innerWidth<=700){
-    window.requestAnimationFrame(()=>document.getElementById('caption').scrollIntoView({behavior:'smooth',block:'start'}));
-  }
 }
 function returnToLastStep(){
   document.getElementById('finale').classList.add('hidden');
