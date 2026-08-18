@@ -120,9 +120,62 @@
   .rail-arrow{color:#f0a768; font-weight:700;}
   .map-note{text-align:center; font-size:10px; color:#777168; margin-top:8px;}
   @media(max-width:700px){
-    .map-stage{grid-template-columns:1fr;}
-    .map-link{transform:rotate(90deg); min-height:12px;}
-    .result-rail{flex-wrap:wrap;}
+    header{
+      padding:14px 18px;
+      flex-wrap:wrap;
+    }
+    .stage{
+      flex-direction:column;
+      padding:14px;
+      gap:16px;
+    }
+    .phone{
+      width:100%;
+      min-width:0;
+      height:560px;
+    }
+    .panel{
+      width:100%;
+      min-width:0;
+    }
+    .tables{
+      max-height:430px;
+      overflow:auto;
+    }
+    table{
+      min-width:600px;
+    }
+    .controls{
+      position:sticky;
+      bottom:0;
+      z-index:8;
+      background:var(--paper);
+      border-top:1px solid var(--line);
+      padding:12px;
+    }
+    .overlay{
+      padding:10px;
+    }
+    .overlay .box{
+      width:100%;
+      max-height:calc(100vh - 20px);
+    }
+    .threecol{
+      flex-direction:column;
+    }
+    .map-stage{
+      grid-template-columns:1fr;
+    }
+    .map-link{
+      transform:rotate(90deg);
+      min-height:12px;
+    }
+    .result-rail{
+      flex-wrap:wrap;
+    }
+    .photo{
+      max-width:100%;
+    }
   }
   .hidden{display:none !important;}
 </style>
