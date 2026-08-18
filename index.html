@@ -346,7 +346,18 @@ function next(){
   renderTo(stepIndex+1);
 }
 function back(){
-  if(stepIndex<=0) return;
+  if(stepIndex<0) return;
+  if(stepIndex===0){
+    clearStage();
+    cap.innerHTML='Press Next to begin the week.';
+    document.getElementById('intro').classList.remove('hidden');
+    document.getElementById('backBtn').disabled=true;
+    document.getElementById('backBtn').textContent='← Back';
+    document.getElementById('nextBtn').disabled=false;
+    document.getElementById('nextBtn').textContent='Next →';
+    paintDots();
+    return;
+  }
   renderTo(stepIndex-1);
 }
 function confirmQuote(){
@@ -393,7 +404,8 @@ function renderTo(target){
     deliveryHint.textContent='Next is unlocked →';
   }
   document.getElementById('nextBtn').disabled = stepNeedsConfirmation(stepIndex);
-  document.getElementById('backBtn').disabled = stepIndex<=0;
+  document.getElementById('backBtn').disabled = false;
+  document.getElementById('backBtn').textContent = stepIndex===0 ? '← Intro' : '← Back';
   document.getElementById('nextBtn').textContent = stepIndex===steps.length-1 ? 'Finish →' : 'Next →';
   paintDots();
 }
