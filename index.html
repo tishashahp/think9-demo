@@ -95,7 +95,7 @@
   .summary-cash b{color:#ffd08a;}
   .monday-summary{max-width:95%;}
 
-  .scroll-hint{display:none;}
+  .mobile-view-toggle{display:none;}
 
   /* controls */
   .controls{display:flex; align-items:center; justify-content:center; gap:18px; padding:14px 0 22px;}
@@ -164,8 +164,14 @@
     .data-pulse-copy span{font-size:12px;}
     .data-pulse-badge{grid-column:2; justify-self:start;}
     .data-pulse button{grid-column:3; grid-row:1 / span 2; align-self:center; font-size:11.5px;}
-    .mobile-summary{display:block; order:3; width:100%; padding:14px; border:1px solid var(--line); border-radius:12px; background:var(--accent-soft);}
-    .phone{order:4; width:100%; max-width:390px; min-width:0; height:560px; align-self:center; border-radius:22px;}
+    .mobile-view-toggle{order:3; position:sticky; top:0; z-index:7; display:grid; grid-template-columns:1fr 1fr; gap:5px; width:100%; padding:5px; border:1px solid var(--line); border-radius:13px; background:rgba(250,249,246,.96); box-shadow:0 5px 18px rgba(22,22,26,.08); backdrop-filter:blur(10px);}
+    .mobile-view-toggle button{display:flex; align-items:center; justify-content:center; gap:6px; min-height:47px; border:0; border-radius:9px; background:transparent; color:#777168; font-size:13px; font-weight:700; cursor:pointer;}
+    .mobile-view-toggle button.active{background:#17171a; color:#fff; box-shadow:0 3px 9px rgba(0,0,0,.16);}
+    .mobile-view-toggle img{width:19px; height:19px;}
+    .mobile-view-toggle .view-count{display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 6px; border-radius:11px; background:#dff6fa; color:#16697a; font-size:10px;}
+    .mobile-view-toggle button.active .view-count{background:#fff;}
+    .mobile-summary{display:block; order:4; width:100%; padding:14px; border:1px solid var(--line); border-radius:12px; background:var(--accent-soft);}
+    .phone{order:5; width:100%; max-width:390px; min-width:0; height:560px; align-self:center; border-radius:22px;}
     .phone .top{padding:11px 12px;}
     .phone .top .name{font-size:14.5px;}
     .phone .top .status{font-size:11.5px;}
@@ -176,7 +182,7 @@
     .monday-summary .card{padding:9px 10px; margin-top:7px; border-left:3px solid #ffd08a;}
     .photo{width:100%; max-width:280px;}
 
-    .tables{order:5; width:100%; max-height:none; padding:14px 12px; overflow:visible;}
+    .tables{order:6; width:100%; max-height:none; padding:14px 12px; overflow:visible;}
     .data-layer-heading{align-items:flex-start;}
     .data-layer-heading b{font-size:14px;}
     .data-layer-heading span{font-size:11.5px;}
@@ -189,9 +195,9 @@
     .tables td:not(.empty)::before{content:attr(data-label); color:#8a8578; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;}
     .tables td.empty{display:block; color:#8a8578;}
 
-    .scroll-hint{position:fixed; right:13px; bottom:calc(78px + env(safe-area-inset-bottom)); z-index:8; display:flex; align-items:center; gap:7px; border:1px solid #bfe8ef; border-radius:22px; background:#fff; color:#16697a; padding:8px 11px; box-shadow:0 8px 24px rgba(0,0,0,.16); font-size:11.5px; font-weight:700; cursor:pointer; animation:hintFloat 1.2s ease-in-out infinite alternate;}
-    .scroll-hint img{width:20px; height:20px;}
-    @keyframes hintFloat{from{transform:translateY(0);}to{transform:translateY(-4px);}}
+    .stage.mobile-view-whatsapp .tables{display:none;}
+    .stage.mobile-view-airtable .phone{display:none;}
+    .stage.mobile-view-airtable .mobile-summary{display:none!important;}
 
     .controls{position:fixed; left:0; right:0; bottom:0; z-index:9; gap:10px; background:rgba(250,249,246,.97); border-top:1px solid var(--line); padding:10px 12px calc(10px + env(safe-area-inset-bottom)); box-shadow:0 -6px 24px rgba(22,22,26,.08);}
     .controls .btn{min-width:102px; min-height:44px; padding:10px 16px; font-size:14px;}
@@ -339,7 +345,7 @@
   <img src="delivery-challan.jpg" alt="Delivery challan from Mahesh Textiles showing 300 organic cotton T-shirts received on 12 August 2026">
 </div>
 
-<div class="stage">
+<div class="stage" id="stage">
   <div class="caption" id="caption">Press Next to begin the week.</div>
 
   <aside class="data-pulse" id="dataPulse" aria-live="polite">
@@ -351,6 +357,13 @@
     <span class="data-pulse-badge" id="dataPulseBadge">0 records</span>
     <button type="button" onclick="scrollToData()">View records ↓</button>
   </aside>
+
+  <nav class="mobile-view-toggle" aria-label="Choose demo view">
+    <button type="button" id="viewWhatsApp" onclick="setMobileView('whatsapp',true)">WhatsApp</button>
+    <button type="button" id="viewAirtable" onclick="setMobileView('airtable',true)">
+      <img src="https://cdn.simpleicons.org/airtable/18BFFF" alt="">Airtable <span class="view-count" id="mobileRecordCount">0</span>
+    </button>
+  </nav>
 
   <div class="phone">
     <div class="top">
@@ -391,10 +404,6 @@
     <div id="mathnote" class="hidden" style="font-size:11px;color:#8a8578;margin-top:4px;">*weighted 4-week average, recent weeks count more · spike weeks flagged, not blindly trusted</div>
   </div>
 </div>
-
-<button class="scroll-hint hidden" id="scrollHint" type="button" onclick="scrollToData()" aria-label="Scroll to Airtable records">
-  <img src="https://cdn.simpleicons.org/airtable/18BFFF" alt=""><span id="scrollHintLabel">Airtable · 0 records ↓</span>
-</button>
 
 <div class="controls">
   <button class="btn ghost" id="backBtn" onclick="back()" disabled>← Back</button>
@@ -446,16 +455,31 @@ function updateDataLayer(index){
   document.getElementById('dataPulseDetail').textContent=state.detail;
   document.getElementById('dataPulseBadge').textContent=`${state.count} ${noun}`;
   document.getElementById('tableRecordCount').textContent=`${state.count} ${noun}`;
-  document.getElementById('scrollHintLabel').textContent=`Airtable · ${state.count} ${noun} ↓`;
+  document.getElementById('mobileRecordCount').textContent=state.count;
   const pulse=document.getElementById('dataPulse');
   pulse.classList.remove('active');
   void pulse.offsetWidth;
   pulse.classList.add('active');
 }
 
+function setMobileView(view,fromUser=false){
+  const stage=document.getElementById('stage');
+  stage.classList.toggle('mobile-view-whatsapp',view==='whatsapp');
+  stage.classList.toggle('mobile-view-airtable',view==='airtable');
+  document.getElementById('viewWhatsApp').classList.toggle('active',view==='whatsapp');
+  document.getElementById('viewAirtable').classList.toggle('active',view==='airtable');
+  if(fromUser && typeof window!=='undefined' && window.innerWidth<=700){
+    window.requestAnimationFrame(()=>document.querySelector('.mobile-view-toggle').scrollIntoView({behavior:'smooth',block:'start'}));
+  }
+}
+
 function scrollToData(){
   const data=document.getElementById('tables');
-  data.scrollIntoView({behavior:'smooth',block:'start'});
+  if(typeof window!=='undefined' && window.innerWidth<=700){
+    setMobileView('airtable',true);
+  }else{
+    data.scrollIntoView({behavior:'smooth',block:'start'});
+  }
   data.classList.remove('reveal');
   void data.offsetWidth;
   data.classList.add('reveal');
@@ -570,7 +594,6 @@ function clearStage(){
   document.getElementById('matht').classList.add('hidden');
   document.getElementById('mathnote').classList.add('hidden');
   document.getElementById('mobileSummary').classList.add('hidden');
-  document.getElementById('scrollHint').classList.add('hidden');
   stepIndex=-1;
 }
 function renderTo(target){
@@ -602,7 +625,7 @@ function renderTo(target){
   document.getElementById('backBtn').textContent = stepIndex===0 ? '← Intro' : '← Back';
   document.getElementById('nextBtn').textContent = stepIndex===steps.length-1 ? 'Finish →' : 'Next →';
   updateDataLayer(stepIndex);
-  document.getElementById('scrollHint').classList.remove('hidden');
+  setMobileView([2,5,8].includes(stepIndex) ? 'airtable' : 'whatsapp');
   paintDots();
   if(typeof window!=='undefined' && window.innerWidth<=700){
     window.requestAnimationFrame(()=>document.getElementById('caption').scrollIntoView({behavior:'smooth',block:'start'}));
