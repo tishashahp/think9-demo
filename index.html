@@ -99,11 +99,13 @@
   .input-card > b{font-size:10px; color:#8a8578; text-transform:uppercase; letter-spacing:.08em; margin-bottom:1px;}
   .input-item{display:flex; align-items:center; gap:6px; padding:4px 5px; border-radius:7px; background:#fff; font-size:10.5px; color:#3d3a33; line-height:1.2;}
   .input-item i{width:20px; height:20px; border-radius:6px; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; font-style:normal; flex:0 0 auto;}
-  .processor-card{gap:7px;}
-  .processor-pair{display:flex; align-items:center; justify-content:center; gap:9px;}
-  .processor-pair div{display:flex; flex-direction:column; align-items:center; gap:3px;}
-  .processor-pair .brand-logo{width:25px; height:25px;}
-  .processor-pair strong{font-size:10px;}
+  .processor-card{gap:6px; padding:8px 6px;}
+  .processor-flow{display:flex; align-items:center; justify-content:center; gap:4px; width:100%;}
+  .processor-step{display:flex; flex-direction:column; align-items:center; gap:3px; min-width:0; width:29px;}
+  .processor-step .brand-logo{width:23px; height:23px;}
+  .processor-step strong{font-size:8.5px; line-height:1.05; text-align:center;}
+  .processor-arrow{font-size:10px; color:var(--accent); font-weight:700;}
+  .stt-badge{width:23px; height:23px; border-radius:50%; background:#6e56cf; color:#fff; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:700;}
   .confirm-card{background:#f1fbf5; border-color:#ccebd8;}
   .data-card{background:#f8fbff;}
   .data-logos{display:flex; align-items:center; gap:8px; margin-bottom:2px;}
@@ -138,7 +140,7 @@
     <h1>From fragmented vendor conversations<br>to <span>a weekly action list</span></h1>
     <div class="tag">An AI workflow for Think9's 30+ brands</div>
     <p><b>What needs ordering, what is overstocked, and what needs no action?</b></p>
-    <p>This demo follows one simulated week at a fictional apparel brand. A supplier price message, a photographed delivery slip, an incomplete supplier message and a one-line order update go in. A Monday summary comes out showing what needs attention. The team only forwards a message, sends a photo, shares a call summary or types a line.</p>
+    <p>This demo follows one simulated week at a fictional apparel brand. A supplier price message, a photographed delivery slip, an incomplete supplier message and a one-line order update go in. A Monday summary comes out showing what needs attention. The team only forwards a message, sends a photo, shares a call summary, sends a voice note or types a line.</p>
     <div class="pilot-map">
       <div class="map-title">How the live pilot would work</div>
       <div class="map-stage">
@@ -156,12 +158,14 @@
         </div>
         <div class="map-link">→</div>
         <div class="map-card processor-card">
-          <div class="processor-pair">
-            <div><img class="brand-logo" src="https://cdn.simpleicons.org/n8n/EA4B71" alt="n8n logo"><strong>n8n</strong></div>
-            <span>+</span>
-            <div><img class="brand-logo" src="https://cdn.simpleicons.org/anthropic/191919" alt="Anthropic logo"><strong>Claude</strong></div>
+          <div class="processor-flow">
+            <div class="processor-step"><img class="brand-logo" src="https://cdn.simpleicons.org/n8n/EA4B71" alt="n8n logo"><strong>Route</strong></div>
+            <span class="processor-arrow">→</span>
+            <div class="processor-step"><span class="stt-badge">STT</span><strong>Transcribe</strong></div>
+            <span class="processor-arrow">→</span>
+            <div class="processor-step"><img class="brand-logo" src="https://cdn.simpleicons.org/anthropic/191919" alt="Anthropic logo"><strong>Extract</strong></div>
           </div>
-          <small>route the input<br>and read the fields</small>
+          <small>n8n + speech-to-text + Claude</small>
         </div>
         <div class="map-link">→</div>
         <div class="map-card confirm-card">
@@ -186,9 +190,9 @@
         <span class="rail-arrow">→</span>
         <div class="result-node"><img class="brand-logo" src="https://cdn.simpleicons.org/n8n/EA4B71" alt="n8n logo"><div><b>n8n sends</b><small>scheduled or urgent</small></div></div>
         <span class="rail-arrow">→</span>
-        <div class="result-node"><img class="brand-logo" src="https://cdn.simpleicons.org/whatsapp/25D366" alt="WhatsApp logo"><div><b>WhatsApp</b><small>alerts + Monday note</small></div></div>
+        <div class="result-node"><img class="brand-logo" src="https://cdn.simpleicons.org/whatsapp/25D366" alt="WhatsApp logo"><div><b>WhatsApp</b><small>alerts + Monday summary</small></div></div>
       </div>
-      <div class="map-note">The connections are simulated. The calculation engine is working code included with the submission; it calculates stock cover, lead time and cash flags.</div>
+      <div class="map-note">For voice notes, speech-to-text runs before Claude extracts the fields. The live connections are simulated. The calculation engine is working code included with the submission; it calculates stock cover, lead time and cash flags.</div>
     </div>
     <button class="btn" onclick="start()">Start the week →</button>
     <div class="fine">~2 minutes · WhatsApp screens simulated · calculations from the real engine</div>
@@ -205,7 +209,7 @@
       <div><b>Brand 31 starts with the history</b><span>A new Foundery founder gets the vendor bench, the real lead times and the seasonal calendar on day one.</span></div>
     </div>
     <p style="font-size:13.5px;">Estimated pilot cost: roughly ₹10,000 a month, to be validated in week 1. Building the live connections is <b>weeks 1 and 2 of the 30-day plan</b>.</p>
-    <button class="btn ghost" onclick="returnToLastStep()">← Back to Monday note</button>
+    <button class="btn ghost" onclick="returnToLastStep()">← Back to Monday summary</button>
     <button class="btn ghost" onclick="restart()">↺ Replay the week</button>
   </div>
 </div>
@@ -230,14 +234,14 @@
   <div class="panel">
     <div class="caption" id="caption">Press Next to begin the week.</div>
     <div class="tables" id="tables">
-      <h3>Vendor quotes</h3>
+      <h3>Confirmed supplier terms</h3>
       <table><thead><tr><th>Vendor</th><th>Item</th><th>Price</th><th>MOQ</th><th>Lead time</th><th>Status</th></tr></thead><tbody id="t-quotes"><tr><td colspan="6" class="empty">Nothing captured yet.</td></tr></tbody></table>
       <h3>Deliveries & reliability</h3>
-      <table><thead><tr><th>Vendor</th><th>Quoted</th><th>Actual</th><th>Note</th></tr></thead><tbody id="t-del"><tr><td colspan="4" class="empty">No deliveries observed yet.</td></tr></tbody></table>
+      <table><thead><tr><th>Vendor</th><th>Promised</th><th>Actual</th><th>Note</th></tr></thead><tbody id="t-del"><tr><td colspan="4" class="empty">No deliveries observed yet.</td></tr></tbody></table>
       <h3>Open orders (incoming stock)</h3>
       <table><thead><tr><th>Variant</th><th>Qty</th><th>Expected</th></tr></thead><tbody id="t-po"><tr><td colspan="3" class="empty">None.</td></tr></tbody></table>
       <h3 id="mathhead" class="hidden">Monday 7:00, the math per variant</h3>
-      <table class="hidden" id="matht"><thead><tr><th>Variant</th><th>Sells/wk*</th><th>Stock</th><th>Cover</th><th>Lead</th><th>Decision</th></tr></thead><tbody id="t-math"></tbody></table>
+      <table class="hidden" id="matht"><thead><tr><th>Variant</th><th>Sells/wk*</th><th>Stock</th><th>Current cover</th><th>Lead</th><th>Action</th></tr></thead><tbody id="t-math"></tbody></table>
       <div id="mathnote" class="hidden" style="font-size:11px;color:#8a8578;margin-top:4px;">*weighted 4-week average, recent weeks count more · spike weeks flagged, not blindly trusted</div>
     </div>
   </div>
@@ -270,9 +274,9 @@ function showPhoto(){ document.getElementById('photoLightbox').classList.remove(
 function hidePhoto(){ document.getElementById('photoLightbox').classList.add('hidden'); }
 
 const steps = [
- { cap:`<b>Tuesday.</b> Mahesh (a cotton vendor in Indore) sends Priya a quote on normal WhatsApp. She forwards it to the system's number, two taps. That forward is the entire "data entry".`,
+ { cap:`<b>Tuesday.</b> Mahesh (a cotton vendor in Indore) sends Priya his prices and terms on normal WhatsApp. She forwards the message to the system's number, two taps. That forward is the entire "data entry".`,
    run(){ addChat(`<div class="day">Tuesday</div>`);
-     addChat(`<div class="msg out"><div class="fwd">↪ Forwarded</div><div class="quoteblock">Namaste madam ji. Rate for 100% organic cotton tee (180 GSM) — Rs 240/pc for 300 pcs. 1000 pcs can do 225. Delivery 3 weeks after advance. GST extra. Advance 50%. — Mahesh Textiles</div><span class="time">10:12</span></div>`); } },
+     addChat(`<div class="msg out"><div class="fwd">↪ Forwarded</div><div class="quoteblock">Namaste madam ji. Rate for 100% organic cotton tee (180 GSM) - Rs 240/pc for 300 pcs. 1000 pcs can do 225. Delivery 3 weeks after advance. GST extra. Advance 50%. - Mahesh Textiles</div><span class="time">10:12</span></div>`); } },
 
  { cap:`The AI reads the message and replies with what it understood. <b>Nothing is saved until Priya confirms.</b> Reading is the machine's job. Confirming is hers, ten seconds, while the context is still fresh. <i>Tap the ✅ to continue.</i>`,
    run(){ addChat(`<div class="msg in">Got it.<div class="card"><b>Mahesh Textiles</b> (Indore)<br>Organic cotton tee · <b>₹240</b>/pc (₹225 @1000+)<br>MOQ <b>300</b> · lead time <b>21 days</b> · 50% advance · GST extra</div><div class="confirm-action"><span class="tapbtn" id="confirmQuoteBtn" onclick="confirmQuote()">✅ Confirm & continue</span><span class="confirm-hint" id="quoteHint">← Required to continue</span></div><span class="time">10:12</span></div>`);
@@ -289,34 +293,34 @@ const steps = [
    run(){ addChat(`<div class="msg in">Extracted from the photo:<div class="card"><b>Vendor</b> · Mahesh Textiles<br><b>Product</b> · Organic cotton tee<br><b>Quantity</b> · 300 pcs<br><b>Received</b> · 12 Aug 2026<br><b>Matched order</b> · 17 Jul 2026<br><b>Actual lead time</b> · 26 days</div><div class="confirm-action"><span class="tapbtn" id="confirmDeliveryBtn" onclick="confirmDelivery()">✅ Confirm & continue</span><span class="confirm-hint" id="deliveryHint">← Required to continue</span></div><span class="time">16:41</span></div>`);
      document.getElementById('nextBtn').disabled = true; } },
 
- { cap:`Confirmed. Only now is the delivery saved. The table compares Mahesh's quoted 21 days with the observed 26, so future planning uses his real pace.`,
-   run(){ addChat(`<div class="msg in">Delivery saved. <b>Mahesh quoted 21 days and took 26.</b> Future plans use his observed pace.<span class="time">16:42</span></div>`);
+ { cap:`Confirmed. Only now is the delivery saved. The table compares Mahesh's promised 21 days with the observed 26, so future planning uses his real pace.`,
+   run(){ addChat(`<div class="msg in">Delivery saved. <b>Mahesh promised 21 days and took 26.</b> Future plans use his observed pace.<span class="time">16:42</span></div>`);
      addRow('t-del', ['Mahesh Textiles','21 days','<b>26 days</b>','<span class="chip warn">runs ~5 days late</span>']); } },
 
  { cap:`<b>Thursday.</b> An incomplete supplier message arrives. The system does not guess. <b>It says what it could not confirm</b> and puts it on Monday's list as a question.`,
    run(){ addChat(`<div class="day">Thursday</div>`);
-     addChat(`<div class="msg out"><div class="fwd">↪ Forwarded</div><div class="quoteblock">tee 210 rs good quality. delivery depends on season sometimes 2 week sometimes more. moq we can discuss — Ganga Knits, Ludhiana</div><span class="time">11:05</span></div>`);
-     addChat(`<div class="msg in">Price ₹210 read fine. But lead time is <i>"depends on season"</i> and MOQ is <i>"we can discuss"</i>. <b>I cannot plan on this quote.</b> Added to Monday's list for you.<span class="time">11:05</span></div>`);
+     addChat(`<div class="msg out"><div class="fwd">↪ Forwarded</div><div class="quoteblock">tee 210 rs good quality. delivery depends on season sometimes 2 week sometimes more. moq we can discuss - Ganga Knits, Ludhiana</div><span class="time">11:05</span></div>`);
+     addChat(`<div class="msg in">Price ₹210 is clear. But lead time is <i>"depends on season"</i> and MOQ is <i>"we can discuss"</i>. <b>I cannot use this for planning yet.</b> Added to Monday's list for you.<span class="time">11:05</span></div>`);
      addRow('t-quotes', ['Ganga Knits','Cotton tee','₹210','?','?','<span class="chip bad">unconfirmed, check</span>']); } },
 
- { cap:`<b>Friday.</b> Priya places an order and tells the system in one typed line. The system counts the incoming stock and stops flagging that product. The expected date uses Mahesh's <b>real</b> 26 day pace, not his quoted 3 weeks.`,
+ { cap:`<b>Friday.</b> Priya places an order and tells the system in one typed line. The system counts the incoming stock and stops flagging that product. The expected date uses Mahesh's <b>real</b> 26 day pace, not his promised 3 weeks.`,
    run(){ addChat(`<div class="day">Friday</div>`);
      addChat(`<div class="msg out">ordered 300 org cotton from Mahesh today<span class="time">09:30</span></div>`);
-     addChat(`<div class="msg in">Logged. <b>300 pcs incoming</b>. Expected around <b>9 Sep</b>, his real pace, not the quoted 3 weeks. I will watch for the challan.<span class="time">09:30</span></div>`);
+     addChat(`<div class="msg in">Logged. <b>300 pcs incoming</b>. Expected around <b>9 Sep</b>, using his real pace rather than the promised 3 weeks. I will watch for the challan.<span class="time">09:30</span></div>`);
      addRow('t-po', ['Org. cotton tee','300','~9 Sep']); } },
 
- { cap:`<b>Monday, 7:00 am.</b> The calculation engine—the working code attached to this submission—runs by itself. Website sales arrive from Shopify, the Amazon file is read from the shared folder, and the math runs <b>per size and variant</b>: how long stock lasts against how long a refill takes.`,
+ { cap:`<b>Monday, 7:00 am.</b> The calculation engine is the working code attached to this submission. It runs by itself. This week's WhatsApp inputs are combined with sales, stock and the brand's existing confirmed supplier records. The math runs <b>per size and variant</b>: how long stock lasts against how long a refill takes.`,
    run(){ document.getElementById('mathhead').classList.remove('hidden');
      document.getElementById('matht').classList.remove('hidden');
      document.getElementById('mathnote').classList.remove('hidden');
      addRow('t-math', ['Cotton-silk kurta','67.8','110','1.6 wk','4 wk','<span class="chip bad">ORDER NOW</span>']);
      addRow('t-math', ['Premium tee','38.1 ⚠ spike','88','2.3 wk','2.6 wk','<span class="chip bad">CHECK, THEN ORDER</span>']);
      addRow('t-math', ['Classic tee','20.0','210','10.5 wk','2 wk','<span class="chip warn">OVERSTOCKED</span>']);
-     addRow('t-math', ['Org. cotton tee','37.7','160 +300 inc.','4.2 wk','26 d real','<span class="chip ok">COVERED</span>']); } },
+     addRow('t-math', ['Org. cotton tee','37.7','160 +300 inc.','4.2 wk on hand','26 d real','<span class="chip ok">COVERED</span>']); } },
 
- { cap:`<b>7:02 am.</b> The Monday note lands on WhatsApp, where it will actually be read. Organic cotton is covered, so it stays in the table but out of the note. <b>Nothing gets ordered or discounted without a human.</b> Forward, snap, type, tap, and this note. That is the entire system.`,
+ { cap:`<b>7:02 am.</b> The Monday summary arrives on WhatsApp, where it will actually be read. Organic cotton is covered, so it stays in the table but does not need an alert. <b>Nothing gets ordered, discounted or sent to a supplier without approval.</b> Forward, snap, type, tap: that is the entire input process.`,
    run(){ addChat(`<div class="day">Monday</div>`);
-     addChat(`<div class="msg in" style="max-width:95%">☀️ <b>Monday summary for the demo apparel brand</b><div class="card">🔴 <b>Cotton-silk kurta, order today.</b> About 68 a week, 110 in stock: <b>1.6 weeks of cover</b>. The Chennai vendor needs 4 weeks. Suggested <b>365 pcs</b>; advance ₹33,945.</div><div class="card">🔴 <b>Premium tee: confirm the spike before ordering.</b> Stock covers 2.3 weeks and the vendor needs 18 days. On current data, the suggested order is <b>275 pcs</b>, including Blinkit's PO for 150; advance ₹72,875. If last week's website spike was campaign-driven, tell me and I will recalculate.</div><div class="card">🟡 <b>Classic tee, overstocked.</b> 210 pieces represent ₹1.68 lakh in retail value. Clearing 80 could generate up to ₹63,920 before discount.</div><div class="card">⚠️ <b>Please check Ganga Knits.</b> Price ₹210 is clear; lead time and MOQ are not. I cannot plan on this quote until both are confirmed.</div><div class="card">🟠 <b>Future risk recorded.</b> Chennai dispatch may slow from late October. Nothing to do today; I will remind you on 1 October to contact the Vizag backup.</div><div class="card">💰 <b>Cash this week.</b> Both suggested orders need ₹1,06,820 in advances, above the ₹75,000 comfort line. The Classic clearance is one possible lever; confirm the discount and expected cash before relying on it.</div><span class="time">07:02</span></div>`); } },
+     addChat(`<div class="msg in" style="max-width:95%">☀️ <b>Monday summary for the demo apparel brand</b><div class="card">🔴 <b>Cotton-silk kurta, order today.</b> About 68 a week, 110 in stock: <b>1.6 weeks of cover</b>. The Chennai vendor needs 4 weeks. Suggested <b>365 pcs</b>; advance ₹33,945.</div><div class="card">🔴 <b>Premium tee: confirm the spike before ordering.</b> Stock covers 2.3 weeks and the vendor needs 18 days. On current data, the suggested order is <b>275 pcs</b>, including Blinkit's PO for 150; advance ₹72,875. If last week's website spike was campaign-driven, tell me and I will recalculate.</div><div class="card">🟡 <b>Classic tee, overstocked.</b> 210 pieces represent ₹1.68 lakh in retail value. Clearing 80 could generate up to ₹63,920 before discount.</div><div class="card">⚠️ <b>Please check Ganga Knits.</b> Price ₹210 is clear; lead time and MOQ are not. I cannot use this for planning until both are confirmed.</div><div class="card">🟠 <b>Future risk recorded.</b> Chennai dispatch may slow from late October. Nothing to do today; I will remind you on 1 October to contact the Vizag backup.</div><div class="card">💰 <b>Cash this week.</b> Both suggested orders need ₹1,06,820 in advances, above the ₹75,000 comfort line. The Classic clearance is one possible lever; confirm the discount and expected cash before relying on it.</div><span class="time">07:02</span></div>`); } },
 ];
 
 // dots
